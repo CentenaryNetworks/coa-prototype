@@ -1,0 +1,100 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="robots" content="noindex, nofollow">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Contact · Chiefs of Angels</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Big+Shoulders+Display:wght@700;900&display=swap">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Instrument+Serif:ital@0;1&display=swap">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Archivo:wght@400;500;600;700&display=swap">
+<link rel="stylesheet" href="coa.css">
+<style>:root{padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)} body{margin:0}</style>
+</head>
+<body>
+<main id="top">
+  <div class="wrap">
+    <div id="crumbs"></div>
+    <header class="pg-hero solo">
+      <div class="c-copy">
+        <span class="eyebrow">Contact us</span>
+        <h1 class="display">Talk to the studio</h1>
+        <p class="story">Placing an order, asking about a piece, or booking a showroom visit: reach out on whichever channel suits you.</p>
+      </div>
+    </header>
+  </div>
+  <section>
+    <div class="wrap contact-grid">
+      <div class="cards">
+        <div class="ccard"><svg><use href="#i-phone"/></svg><span class="eyebrow">Phone</span><b id="tel">+27 78 983 4529</b><div class="acts"><a href="tel:+27789834529">Call</a><button data-copy="+27 78 983 4529">Copy number</button></div></div>
+        <div class="ccard"><svg><use href="#i-mail"/></svg><span class="eyebrow">Email</span><b>info@chiefsofangels.co.za</b><div class="acts"><a href="mailto:info@chiefsofangels.co.za">Write an email</a><button data-copy="info@chiefsofangels.co.za">Copy address</button></div></div>
+        <div class="ccard" id="showroom"><svg><use href="#i-pin"/></svg><span class="eyebrow">Showroom · by appointment</span><b>16 Victoria Yards, Viljoen Street, Lorentzville, Johannesburg, Gauteng 2094</b><div class="acts"><a href="https://www.google.com/maps/search/?api=1&query=Victoria+Yards+Lorentzville+Johannesburg">Open in Google Maps</a><button data-copy="16 Victoria Yards, Viljoen Street, Lorentzville, Johannesburg, Gauteng 2094">Copy address</button></div></div>
+        <p class="caption" id="copyNote" aria-live="polite"></p>
+      </div>
+      <div id="form">
+        <h2 class="display" style="font-size:clamp(40px,4.4vw,64px);margin:0 0 8px">Send a message</h2>
+        <p style="margin:0 0 22px;color:var(--smoke)">We read every message. Pick a topic so it reaches the right person.</p>
+        <form class="form" id="cform" novalidate>
+          <div class="row2">
+            <div class="fld"><label for="cname">Your name</label><input id="cname" autocomplete="name" required><span class="err"></span></div>
+            <div class="fld"><label for="cemail">Email</label><input id="cemail" type="email" autocomplete="email" required><span class="err"></span></div>
+          </div>
+          <div class="row2">
+            <div class="fld"><label for="ctopic">Topic</label><select id="ctopic"><option>A product question</option><option>An order I placed</option><option>Book a showroom visit</option><option>Sizing advice</option><option>Wholesale and stockists</option><option>Something else</option></select></div>
+            <div class="fld" id="orderFld"><label for="corder">Order number <small>(optional)</small></label><input id="corder" placeholder="e.g. COA-10421"></div>
+          </div>
+          <div class="fld" id="dateFld" hidden><label for="cdate">Preferred visit date</label><input id="cdate" type="date"><span class="err"></span></div>
+          <div class="fld"><label for="cmsg">Message</label><textarea id="cmsg" required></textarea><span class="err"></span></div>
+          <button class="btn dark" type="submit" style="justify-self:start">Send message <svg><use href="#i-arrow"/></svg></button>
+        </form>
+        <div class="ok-box" id="cok" hidden><span class="eyebrow" style="color:var(--heart)">Message ready</span><span class="story">Thank you, <span id="okName"></span>.</span><p style="margin:0">In the live site this goes straight to info@chiefsofangels.co.za. In this prototype nothing was sent.</p><button class="link-arrow" id="again" style="justify-self:start">Send another message</button></div>
+      </div>
+    </div>
+  </section>
+  <section style="padding-top:0">
+    <div class="wrap">
+      <div class="sec-head"><div><span class="eyebrow">Before you write</span><h2 class="display">Quick answers</h2></div><a class="link-arrow" href="faq.html">All FAQs</a></div>
+      <div class="ways">
+        <div class="way"><h3>How long will my order take?</h3><p>Made-to-order pieces are finished in 5–7 working days before they’re sent.</p><a href="faq.html#made-to-order">More on made to order</a></div>
+        <div class="way"><h3>Not sure about your size?</h3><p>Sizes run XS to XL, with a few pieces in a shorter range. Ask us and we’ll help.</p><a href="faq.html#sizing">Sizing FAQ</a></div>
+        <div class="way"><h3>Want to see pieces first?</h3><p>Visit the Victoria Yards showroom. Visits are by appointment.</p><a href="#form" id="bookLink">Book a visit</a></div>
+      </div>
+    </div>
+  </section>
+</main>
+<script src="coa-data.js"></script>
+<script src="coa.js"></script>
+<script>
+(function(){
+const {mount,$,crumbs,store}=COA;
+mount("contact");
+$("#crumbs").innerHTML=crumbs([["Contact"]]);
+document.addEventListener("click",async e=>{
+  const b=e.target.closest("[data-copy]"); if(!b) return;
+  try{ await navigator.clipboard.writeText(b.dataset.copy); $("#copyNote").textContent="Copied: "+b.dataset.copy }
+  catch(_){ $("#copyNote").textContent=b.dataset.copy }
+});
+const topic=$("#ctopic");
+function topicUI(){ $("#dateFld").hidden=topic.value!=="Book a showroom visit"; $("#orderFld").style.visibility=topic.value==="An order I placed"?"visible":"hidden" }
+topic.addEventListener("change",topicUI);
+$("#bookLink").addEventListener("click",()=>{ topic.value="Book a showroom visit"; topicUI() });
+if(location.hash==="#showroom"){ topic.value="Book a showroom visit" }
+topicUI();
+const u=store.get("coa-user",null); if(u){ $("#cname").value=u.name||""; $("#cemail").value=u.email||"" }
+function check(id,ok,msg){ const f=$(id).closest(".fld"); f.classList.toggle("bad",!ok); f.querySelector(".err").textContent=ok?"":msg; return ok }
+$("#cform").addEventListener("submit",e=>{
+  e.preventDefault();
+  const a=check("#cname",$("#cname").value.trim().length>1,"Enter your name.");
+  const b=check("#cemail",/^[^@\s]+@[^@\s]+\.[^@\s]+$/.test($("#cemail").value.trim()),"Enter an email address like name@example.com.");
+  const c=check("#cmsg",$("#cmsg").value.trim().length>4,"Tell us a little about what you need.");
+  if(!(a&&b&&c)){ document.querySelector(".fld.bad input, .fld.bad textarea")?.focus(); return }
+  $("#okName").textContent=$("#cname").value.trim().split(" ")[0];
+  $("#cform").hidden=true; $("#cok").hidden=false;
+});
+$("#again").onclick=()=>{ $("#cform").reset(); $("#cform").hidden=false; $("#cok").hidden=true; topicUI() };
+})();
+</script>
+</body>
+</html>

@@ -1,0 +1,51 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="robots" content="noindex, nofollow">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>COA Diaries · Chiefs of Angels</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Big+Shoulders+Display:wght@700;900&display=swap">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Instrument+Serif:ital@0;1&display=swap">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Archivo:wght@400;500;600;700&display=swap">
+<link rel="stylesheet" href="coa.css">
+<style>:root{padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)} body{margin:0}</style>
+</head>
+<body>
+<main id="top">
+  <div class="wrap">
+    <div id="crumbs"></div>
+    <header class="pg-hero solo">
+      <div class="c-copy">
+        <span class="eyebrow">COA Diaries</span>
+        <h1 class="display">The story beneath the sound</h1>
+        <p class="story">Lookbooks, histories and the people behind the clothes. Every collection starts as a story.</p>
+      </div>
+    </header>
+  </div>
+  <section>
+    <div class="wrap">
+      <div class="d-list" id="dl"></div>
+    </div>
+  </section>
+  <section class="band">
+    <div class="wrap two" style="align-items:center">
+      <blockquote class="quote">Every movement begins with a feeling.<cite>The Story Beneath the Sound · Chapter one</cite></blockquote>
+      <div class="prose" style="color:#cfcdc8"><p>New entries are written by the Chiefs of Angels team in WordPress and appear here automatically, newest first, each linked to the pieces it inspired.</p><a class="btn ghost" href="index.html#join" style="justify-self:start">Get new entries by email</a></div>
+    </div>
+  </section>
+</main>
+<script src="coa-data.js"></script>
+<script src="coa.js"></script>
+<script>
+(function(){
+const {mount,$,crumbs,DIARIES,img,esc,ar,P,C}=COA;
+mount("diaries");
+$("#crumbs").innerHTML=crumbs([["COA Diaries"]]);
+$("#dl").innerHTML=DIARIES.map(d=>`<a class="d-card" href="diary.html#${d.id}"><img src="${img(d.cover)}" alt=""><div class="in"><span class="eyebrow">${esc(d.k)} · ${(d.prods||P.filter(C[d.col].f)).length} pieces</span><h2 class="display">${esc(d.t)}</h2><p>${esc(d.dek)}</p><span class="go">Read the story ${ar}</span></div></a>`).join("");
+})();
+</script>
+</body>
+</html>

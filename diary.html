@@ -1,0 +1,77 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="robots" content="noindex, nofollow">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Diaries · Chiefs of Angels</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Big+Shoulders+Display:wght@700;900&display=swap">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Instrument+Serif:ital@0;1&display=swap">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Archivo:wght@400;500;600;700&display=swap">
+<link rel="stylesheet" href="coa.css">
+<style>:root{padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)} body{margin:0}</style>
+</head>
+<body>
+<div class="read-bar" id="rbar" aria-hidden="true"></div>
+<main id="top"></main>
+<script src="coa-data.js"></script>
+<script src="coa.js"></script>
+<script>
+(function(){
+const {mount,$,crumbs,DIARIES,img,esc,ar,P,BY,C,card,hashFor,R,curl}=COA;
+mount("diaries");
+let id=hashFor("diary.html"); if(!DIARIES.find(d=>d.id===id)) id="story-beneath-the-sound";
+const d=DIARIES.find(x=>x.id===id), other=DIARIES.find(x=>x.id!==id);
+document.title=`${d.t} · COA Diaries`;
+const wearing=ids=>`<div class="wearing">${ids.filter(i=>BY[i]).map(i=>`<a href="product.html#${i}"><img src="${img(BY[i].imgs[0])}" alt=""><b>${esc(BY[i].n)}</b><span class="price">${R(BY[i].p)}</span></a>`).join("")}</div>`;
+let body="";
+
+if(id==="story-beneath-the-sound"){
+  /* Chapter titles are the live page's text; photos are the page's archive images, in order. */
+  const CH=[
+    ["Chapter one","Every movement begins with a feeling.",["diary-01"]],
+    ["Chapter two","Before there was rock… there was gospel. There was the blues.",["diary-02","diary-03"]],
+    ["Chapter three","The guitar didn’t create rebellion.",["diary-04","diary-05"]],
+    ["Chapter four","Rock ’n’ roll isn’t just a genre.",["diary-06","diary-07"]],
+    ["Chapter five","People obsess over the “rock”.",["diary-08","diary-09"]],
+    ["Chapter six","We are who we are.",["diary-11"]]
+  ];
+  body=`<header class="d-hero"><img src="${img("diary-01")}" alt="Blues musician holding an electric guitar on a city street at night, black and white archive photo" style="object-position:center 30%"><div class="wrap"><span class="eyebrow">${esc(d.k)} · Six chapters</span><h1 class="display">${esc(d.t)}</h1><p class="story">${esc(d.dek)}</p></div></header>
+  <div class="wrap">${crumbs([["COA Diaries","diaries.html"],[d.t]])}
+    ${CH.map((c,i)=>`<article class="chapter"><div class="ch-media${c[2].length>1?" two-up":""}">${c[2].map(x=>`<img src="${img(x)}" alt="Archive photograph for ${c[0].toLowerCase()}" loading="lazy">`).join("")}</div><div class="ch-copy"><span class="ch-num" aria-hidden="true">0${i+1}</span><span class="eyebrow">${c[0]}</span><h2>${esc(c[1])}</h2></div></article>`).join("")}
+  </div>
+  <section><div class="wrap"><div class="sec-head"><div><span class="eyebrow">The sound, worn</span><h2 class="display">Shop the story</h2></div><a class="link-arrow" href="${curl("new-in")}">Shop new in ${ar}</a></div><div class="p-grid4">${d.prods.slice(0,8).map(i=>card(i)).join("")}</div></div></section>`;
+}
+
+if(id==="skool-of-rock"){
+  /* Text and captions are from the live “Skool of Rock” page. Looks 3 and 5 have no caption on the live page; the pieces listed are matched by eye. */
+  const L=[
+    {n:"The Experiment",lines:["Youth is an experiment.","Try something new. Get it wrong. Try again.","There’s no formula for finding yourself."],img:"sor-look-2",cap:"Daeva wears the Skool of Rock Sweater paired with the Skool of Rock Sweat Pants.",w:["skool-of-rock-sweater","skool-of-rock-sweat-pants"]},
+    {n:"The Individual",lines:["There is no right way to become yourself.","Take what you learn. Leave what you don’t.","Make room for the unexpected."],img:"sor-look-4",cap:"Top: Skool of Rock Tee. Bottom: Tharpe Skirt.",w:["skool-of-rock-tee","fitted-a-line-skirt"]},
+    {n:"The Process",lines:["Learning never really stops.","Neither does changing your mind.","Some things take time. Others take a little rebellion."],img:"sor-look-3",cap:"",w:["skool-of-rock-muscle-tee","skool-of-rock-sweat-pants"]},
+    {n:"The Conclusion",lines:["No finished product. No final answer.","Just lessons learned, rules rewritten, and a little more freedom to be yourself.","Growing up is a part of the process."],img:"sor-look-5",cap:"",w:["skool-of-rock-tee","skool-of-rock-sweat-pants"]}
+  ];
+  body=`<header class="d-hero"><img src="${img("sor-look-1")}" alt="Model in the Skool of Rock sweater and shorts against a painted concrete wall" style="object-position:center 25%"><div class="wrap"><span class="eyebrow">${esc(d.k)}</span><h1 class="display">${esc(d.t)}</h1><p class="story">${esc(d.dek)}</p></div></header>
+  <div class="wrap">${crumbs([["COA Diaries","diaries.html"],[d.t]])}
+    <section style="padding-bottom:30px"><div class="two"><p class="lede">No finished product. Just freedom to try.</p><div class="prose"><p>Our latest summer collection looks at youth as a practice: an ongoing experiment in identity, expression and figuring things out as you go.</p><p>Four chapters, five looks, one class you never quite graduate from.</p></div></div></section>
+  </div>
+  <figure style="margin:0;background:var(--night)"><img src="${img("sor-img-8372")}" alt="Chiefs of Angels Universite lettering over a baseball resting on a dirt baseline" style="width:100%;max-height:78vh;object-fit:cover;display:block" loading="lazy"></figure>
+  <div class="wrap">
+    ${L.map((l,i)=>`<article class="look"><div class="look-img"><span class="n">Look ${i+2} of 5</span><img src="${img(l.img)}" alt="Skool of Rock look: ${esc(l.w.map(x=>BY[x]?.n).join(" and "))}" loading="lazy"></div><div class="look-copy"><span class="eyebrow" style="color:var(--heart)">Chapter ${i+1}</span><h2>${l.n}</h2><div class="lines">${l.lines.map(x=>`<span>${esc(x)}</span>`).join("")}</div>${l.cap?`<p class="caption">${esc(l.cap)}</p>`:""}<span class="eyebrow" style="color:var(--smoke);margin-top:8px">Shop the look</span>${wearing(l.w)}</div></article>`).join("")}
+  </div>
+  <section style="padding-top:20px"><div class="wrap"><div class="sec-head"><div><span class="eyebrow">Enrolment is open</span><h2 class="display">The full collection</h2></div><a class="link-arrow" href="${curl("skool-of-rock")}">Shop Skool of Rock ${ar}</a></div><div class="p-grid4">${P.filter(C["skool-of-rock"].f).slice(0,8).map(p=>card(p.id)).join("")}</div></div></section>`;
+}
+
+body+=`<section class="band"><div class="wrap two" style="align-items:center"><div><span class="eyebrow">Next entry</span><h2 class="display" style="font-size:clamp(46px,6vw,96px);margin:10px 0 0">${esc(other.t)}</h2></div><div style="display:grid;gap:18px"><p class="story" style="font-size:22px;line-height:1.35;margin:0;color:#dedcd7">${esc(other.dek)}</p><a class="btn ghost" style="justify-self:start" href="diary.html#${other.id}">Read next ${ar}</a></div></div></section>`;
+$("#top").innerHTML=body;
+
+/* reading progress */
+const bar=$("#rbar");
+addEventListener("scroll",()=>{ const h=document.documentElement; bar.style.width=Math.min(100,scrollY/(h.scrollHeight-innerHeight)*100)+"%" },{passive:true});
+addEventListener("hashchange",()=>location.reload());
+})();
+</script>
+</body>
+</html>

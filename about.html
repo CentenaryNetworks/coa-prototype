@@ -1,0 +1,98 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="robots" content="noindex, nofollow">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>About · Chiefs of Angels</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Big+Shoulders+Display:wght@700;900&display=swap">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Instrument+Serif:ital@0;1&display=swap">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Archivo:wght@400;500;600;700&display=swap">
+<link rel="stylesheet" href="coa.css">
+<style>:root{padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)} body{margin:0}</style>
+</head>
+<body>
+<main id="top">
+  <div class="wrap">
+    <div id="crumbs"></div>
+    <header class="pg-hero">
+      <div class="c-copy">
+        <span class="eyebrow">About Chiefs of Angels</span>
+        <h1 class="display">Above the angels</h1>
+        <p class="story">The name Chiefs of Angels was coined from the Biblical reference to human beings’ spiritual ranking and authority.</p>
+      </div>
+      <div class="media"><img src="img/cat-loungewear.jpg" alt="Model in a black Chiefs of Angels sweater with a red heart patch, against a brick wall"></div>
+    </header>
+  </div>
+
+  <section>
+    <div class="wrap two">
+      <p class="lede">We believe humanity has been made superior to angels, so we should wear clothing that agrees with that truth.</p>
+      <div class="prose">
+        <p>Our clothing is a mix of up-cycled, recycled, repurposed and newly made pieces. Bringing those ways of making together with a rock ’n’ roll sensibility is what sets Chiefs of Angels apart from other brands.</p>
+        <p>The leather jacket is the label’s core style. Everything else is classic clothing, always with a twist, made to complement that timeless jacket. Our clients describe the result as spiritual, rebellious and timeless.</p>
+      </div>
+    </div>
+  </section>
+
+  <section style="padding-top:0">
+    <div class="wrap">
+      <div class="sec-head"><div><span class="eyebrow">What the brand stands on</span><h2 class="display">Three pillars</h2></div></div>
+      <div class="pillars">
+        <div class="pillar"><svg viewBox="0 0 24 24" aria-hidden="true"><use href="#i-star"/></svg><h3>Rock ’n’ roll history</h3><p>The sound, the attitude and the leather jacket. Rock ’n’ roll shapes the silhouettes, the graphics and the way every piece is worn.</p></div>
+        <div class="pillar"><svg viewBox="0 0 24 24" aria-hidden="true"><use href="#i-star"/></svg><h3>Spirituality</h3><p>Clothing as a reminder of who you are. We want people to feel empowered, even invincible, in what they wear.</p></div>
+        <div class="pillar"><svg viewBox="0 0 24 24" aria-hidden="true"><use href="#i-star"/></svg><h3>Sustainability</h3><p>Fashion leaves a heavy footprint on the planet. We work with up-cycled, recycled and repurposed materials, and do what we can to reduce our own impact.</p></div>
+      </div>
+    </div>
+  </section>
+
+  <section class="band">
+    <div class="wrap two" style="align-items:end">
+      <blockquote class="quote">An international African contemporary luxury brand.<cite>Where Chiefs of Angels is heading</cite></blockquote>
+      <div class="prose" style="color:#cfcdc8">
+        <p>Our aim is to stand alongside the top brands in every fashion capital. We keep improving how we work to meet international standards, while still meeting the exacting taste of the global citizen.</p>
+        <p>We want Chiefs of Angels to be known for quality, attainability and uniqueness, without compromising the pillars the brand is built on.</p>
+      </div>
+    </div>
+  </section>
+
+  <section id="services">
+    <div class="wrap">
+      <div class="sec-head"><div><span class="eyebrow">Services</span><h2 class="display">What we make</h2></div></div>
+      <div class="two" style="margin-bottom:48px">
+        <p class="lede">High-quality clothing for all people, made with the quintessential rock ’n’ roller in mind.</p>
+        <div class="prose">
+          <p>We believe clothing is the most immediate form of creative expression. That idea guides every collection: pieces that express your thoughts, your lifestyle and your spirituality.</p>
+          <p>Quality materials are chosen for every production run. Chiefs of Angels doesn’t compete with other brands. We’ve set our own standards and our own unconventional path in fashion.</p>
+        </div>
+      </div>
+      <div class="ways">
+        <div class="way"><h3>Online store</h3><p>The full range, with most pieces made to order for you in 5–7 working days.</p><a href="collection.html#new-in">Shop new in <svg width="14" height="14" style="stroke:currentColor;fill:none;stroke-width:1.8"><use href="#i-arrow"/></svg></a></div>
+        <div class="way"><h3>Showroom</h3><p>See and try pieces at Victoria Yards in Lorentzville, Johannesburg, by appointment.</p><a href="contact.html#showroom">Book a visit <svg width="14" height="14" style="stroke:currentColor;fill:none;stroke-width:1.8"><use href="#i-arrow"/></svg></a></div>
+        <div class="way"><h3>Wholesale partners</h3><p>Chiefs of Angels is also stocked through wholesale partners. Retailers can get in touch about stocking the label.</p><a href="contact.html#form">Ask about wholesale <svg width="14" height="14" style="stroke:currentColor;fill:none;stroke-width:1.8"><use href="#i-arrow"/></svg></a></div>
+      </div>
+    </div>
+  </section>
+
+  <section style="padding-top:0">
+    <div class="wrap">
+      <div class="sec-head"><div><span class="eyebrow">Read more</span><h2 class="display">From the Diaries</h2></div><a class="link-arrow" href="diaries.html">All entries</a></div>
+      <div class="d-list" id="dl"></div>
+    </div>
+  </section>
+</main>
+<script src="coa-data.js"></script>
+<script src="coa.js"></script>
+<script>
+(function(){
+const {mount,$,crumbs,DIARIES,img,esc,ar}=COA;
+mount("about");
+$("#crumbs").innerHTML=crumbs([["About"]]);
+$("#dl").innerHTML=DIARIES.map(d=>`<a class="d-card" href="diary.html#${d.id}"><img src="${img(d.cover)}" alt="" loading="lazy"><div class="in"><span class="eyebrow">${esc(d.k)}</span><h2 class="display">${esc(d.t)}</h2><p>${esc(d.dek)}</p><span class="go">Read ${ar}</span></div></a>`).join("");
+if(location.hash==="#services") setTimeout(()=>document.getElementById("services").scrollIntoView(),50);
+})();
+</script>
+</body>
+</html>

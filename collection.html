@@ -1,0 +1,134 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="robots" content="noindex, nofollow">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Collection · Chiefs of Angels</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Big+Shoulders+Display:wght@700;900&display=swap">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Instrument+Serif:ital@0;1&display=swap">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Archivo:wght@400;500;600;700&display=swap">
+<link rel="stylesheet" href="coa.css">
+<style>
+:root{padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}
+body{margin:0}
+</style>
+</head>
+<body>
+<main id="top">
+  <div class="wrap">
+    <nav class="crumbs" aria-label="Breadcrumb" id="crumbs"></nav>
+    <div class="c-hero" id="chero"></div>
+    <div class="c-switch" id="cswitch" aria-label="Other collections"></div>
+  </div>
+  <div class="toolbar">
+    <div class="wrap">
+      <div class="chips" id="chips" aria-label="Filter by type"></div>
+      <div class="tb-right">
+        <span class="tb-count" id="count" aria-live="polite"></span>
+        <label class="sr" for="sort">Sort by</label>
+        <select class="sort" id="sort">
+          <option value="new">Newest</option>
+          <option value="lo">Price: low to high</option>
+          <option value="hi">Price: high to low</option>
+          <option value="az">Name A–Z</option>
+        </select>
+        <div class="density" role="group" aria-label="Grid size">
+          <button class="d1" data-c="1" aria-pressed="false" aria-label="One column"><svg viewBox="0 0 16 16"><rect x="3" y="1" width="10" height="14"/></svg></button>
+          <button data-c="2" aria-pressed="false" aria-label="Two columns"><svg viewBox="0 0 16 16"><rect x="1" y="1" width="6.5" height="14"/><rect x="8.5" y="1" width="6.5" height="14"/></svg></button>
+          <button class="d3" data-c="3" aria-pressed="false" aria-label="Three columns"><svg viewBox="0 0 16 16"><rect x="0" y="1" width="4.5" height="14"/><rect x="5.75" y="1" width="4.5" height="14"/><rect x="11.5" y="1" width="4.5" height="14"/></svg></button>
+          <button class="d4" data-c="4" aria-pressed="true" aria-label="Four columns"><svg viewBox="0 0 16 16"><rect x="0" y="1" width="3.2" height="14"/><rect x="4.27" y="1" width="3.2" height="14"/><rect x="8.53" y="1" width="3.2" height="14"/><rect x="12.8" y="1" width="3.2" height="14"/></svg></button>
+        </div>
+      </div>
+    </div>
+  </div>
+  <div class="wrap">
+    <div class="grid" id="grid"></div>
+    <div class="more" id="more"></div>
+  </div>
+</main>
+
+<script src="coa-data.js"></script>
+<script src="coa.js"></script>
+<script>
+(function(){
+const {P,C,SWITCH,TYPES,R,$,esc,card,mount,store,curl,ar,img}=COA;
+mount("shop");
+
+const PAGE=15;
+let slug="new-in", type="all", sort="new", shown=PAGE;
+let cols=store.get("coa-cols",4);
+
+function readSlug(){
+  const h=COA.hashFor("collection.html");
+  return C[h]?h:"shop";
+}
+
+function hero(){
+  const c=C[slug], items=P.filter(c.f);
+  document.title=`${c.t} · Chiefs of Angels`;
+  const parent=c.parent?`<a href="${curl(c.parent)}">${C[c.parent].t}</a><span aria-hidden="true">/</span>`:"";
+  $("#crumbs").innerHTML=`<a href="index.html">Home</a><span aria-hidden="true">/</span>${c.k==="Collection"?`<a href="${curl("shop")}">Shop</a><span aria-hidden="true">/</span>`:""}${parent}<span aria-current="page">${c.t}</span>`;
+  let media;
+  if(c.crest) media=`<img class="contain" src="img/universite.png" alt="Chiefs of Angels Universite crest">`;
+  else if(c.word) media=`<div class="c-type" aria-hidden="true">${c.word}</div>`;
+  else media=`<img src="${img(c.img)}" alt="" style="object-position:${c.pos||"center"}">`;
+  $("#chero").innerHTML=`<div class="c-copy"><span class="eyebrow">${c.k} · ${items.length} pieces</span><h1 class="display">${c.t}</h1><p class="story">${esc(c.d)}</p></div><div class="c-media">${media}</div>`;
+  $("#cswitch").innerHTML=SWITCH.map(s=>`<a href="${curl(s)}" class="${s===slug||C[slug].parent===s?"on":""}" ${s===slug?'aria-current="page"':""}>${C[s].t}</a>`).join("");
+  const on=$("#cswitch a.on"); if(on) on.scrollIntoView({block:"nearest",inline:"center"});
+}
+
+function chips(){
+  const items=P.filter(C[slug].f);
+  const counts={}; items.forEach(p=>counts[p.type]=(counts[p.type]||0)+1);
+  const keys=Object.keys(TYPES).filter(k=>counts[k]);
+  if(type!=="all" && !counts[type]) type="all";
+  $("#chips").innerHTML=`<button class="chip" data-t="all" aria-pressed="${type==="all"}">All <small>${items.length}</small></button>`+
+    (keys.length>1?keys.map(k=>`<button class="chip" data-t="${k}" aria-pressed="${type===k}">${TYPES[k]} <small>${counts[k]}</small></button>`).join(""):"");
+}
+
+function list(){
+  let items=P.filter(C[slug].f).filter(p=>type==="all"||p.type===type);
+  const by={new:(a,b)=>a.o-b.o,lo:(a,b)=>a.p-b.p||a.o-b.o,hi:(a,b)=>b.p-a.p||a.o-b.o,az:(a,b)=>a.n.localeCompare(b.n)}[sort];
+  return items.sort(by);
+}
+
+function grid(animate){
+  const items=list(), g=$("#grid");
+  const draw=()=>{
+    g.style.setProperty("--cols",cols); g.dataset.cols=cols;
+    if(!items.length){ g.innerHTML=`<div class="empty-grid"><span class="story">Nothing here in that style yet.</span><button class="link-arrow" id="reset">Show everything in ${esc(C[slug].t)}</button></div>`; $("#more").innerHTML=""; $("#count").textContent="0 pieces"; const r=$("#reset"); if(r) r.onclick=()=>{type="all";chips();grid(true)}; return }
+    const vis=items.slice(0,shown).map(p=>card(p.id,{eager:true}));
+    const c=C[slug];
+    if(items.length>=6 && type==="all"){
+      const q=c.q||"Every piece is cut and finished for you, by hand.";
+      vis.splice(Math.min(5,vis.length),0,`<aside class="insert"><svg class="wing" viewBox="0 0 24 24" aria-hidden="true"><use href="#i-star" fill="#fff"/></svg><span class="eyebrow">${c.story?"From the Diaries":"Made to order"}</span><blockquote>“${esc(q)}”</blockquote><a href="${c.story?"diary.html#"+c.story:"faq.html#made-to-order"}">${c.story?"Read the story":"How it works"} ${ar}</a></aside>`);
+    }
+    g.innerHTML=vis.join("");
+    const n=Math.min(shown,items.length);
+    $("#count").textContent=`${items.length} piece${items.length===1?"":"s"}`;
+    $("#more").innerHTML=items.length>shown?`<p>Showing ${n} of ${items.length}</p><div class="bar"><i style="width:${n/items.length*100}%"></i></div><button class="btn dark" id="moreBtn">Show ${Math.min(PAGE,items.length-shown)} more</button>`:items.length>PAGE?`<p>You’ve seen all ${items.length} pieces</p>`:"";
+    const mb=$("#moreBtn"); if(mb) mb.onclick=()=>{ shown+=PAGE; grid(false) };
+  };
+  if(animate && !matchMedia("(prefers-reduced-motion: reduce)").matches){ g.classList.add("fade"); setTimeout(()=>{ draw(); g.classList.remove("fade") },200) } else draw();
+}
+
+function load(){
+  slug=readSlug(); type="all"; shown=PAGE;
+  
+  hero(); chips(); grid(false);
+  document.querySelectorAll(".density button").forEach(b=>b.setAttribute("aria-pressed",+b.dataset.c===cols));
+}
+
+$("#chips").addEventListener("click",e=>{ const b=e.target.closest(".chip"); if(!b) return; type=b.dataset.t; shown=PAGE; chips(); grid(true) });
+$("#sort").addEventListener("change",e=>{ sort=e.target.value; grid(true) });
+document.querySelector(".density").addEventListener("click",e=>{ const b=e.target.closest("button"); if(!b) return; cols=+b.dataset.c; store.set("coa-cols",cols); document.querySelectorAll(".density button").forEach(x=>x.setAttribute("aria-pressed",x===b)); grid(false) });
+addEventListener("hashchange",()=>{ load(); scrollTo({top:0,behavior:"smooth"}) });
+if(innerWidth<=640 && cols>2) cols=2;
+load();
+})();
+</script>
+</body>
+</html>

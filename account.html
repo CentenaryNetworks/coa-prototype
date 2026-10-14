@@ -1,0 +1,149 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="robots" content="noindex, nofollow">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>My account · Chiefs of Angels</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Big+Shoulders+Display:wght@700;900&display=swap">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Instrument+Serif:ital@0;1&display=swap">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Archivo:wght@400;500;600;700&display=swap">
+<link rel="stylesheet" href="coa.css">
+<style>:root{padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)} body{margin:0}</style>
+</head>
+<body>
+<main id="top"><div class="wrap" id="acc"></div></main>
+<script src="coa-data.js"></script>
+<script src="coa.js"></script>
+<script>
+(function(){
+const {mount,$,crumbs,BY,R,esc,img,store,addWorkingDays,fmt,ar,purl,curl,card,wish,toast}=COA;
+mount("account");
+const PROV=["Eastern Cape","Free State","Gauteng","KwaZulu-Natal","Limpopo","Mpumalanga","North West","Northern Cape","Western Cape"];
+const okEmail=v=>/^[^@\s]+@[^@\s]+\.[^@\s]+$/.test(v);
+function check(id,ok,msg){ const f=$(id).closest(".fld"); f.classList.toggle("bad",!ok); f.querySelector(".err").textContent=ok?"":msg; return ok }
+
+function status(o){
+  const now=new Date(), d7=addWorkingDays(o.date,o.mto?7:1);
+  return now<d7?{c:"making",t:o.mto?"Being made":"Being packed",s:`${o.mto?"Dispatch":"Ready"} by ${fmt(d7)}`}:{c:"sent",t:o.ship==="Courier"?"Dispatched":"Ready to collect",s:`Since ${fmt(d7)}`};
+}
+
+/* ---------- signed out ---------- */
+function auth(tab){
+  $("#acc").innerHTML=`${crumbs([["My account"]])}
+  <div class="auth">
+    <div>
+      <div class="tabs" role="tablist"><button role="tab" data-t="in" aria-selected="${tab!=="up"}">Sign in</button><button role="tab" data-t="up" aria-selected="${tab==="up"}">Create account</button></div>
+      <form class="form" id="fin" novalidate ${tab==="up"?"hidden":""}>
+        <div class="fld"><label for="ie">Email</label><input id="ie" type="email" autocomplete="email"><span class="err"></span></div>
+        <div class="fld"><label for="ip">Password</label><input id="ip" type="password" autocomplete="current-password"><span class="err"></span></div>
+        <div style="display:flex;justify-content:space-between;align-items:center;gap:12px;flex-wrap:wrap"><button class="btn dark" type="submit">Sign in ${ar}</button><button type="button" id="lost" style="font-size:13px;text-decoration:underline;text-underline-offset:3px;color:var(--smoke)">Forgot your password?</button></div>
+        <p class="caption" id="lostMsg" aria-live="polite"></p>
+      </form>
+      <form class="form" id="fup" novalidate ${tab==="up"?"":"hidden"}>
+        <div class="fld"><label for="un">Full name</label><input id="un" autocomplete="name"><span class="err"></span></div>
+        <div class="fld"><label for="ue">Email</label><input id="ue" type="email" autocomplete="email" value="${esc(store.get("coa-orders",[])[0]?.email||"")}"><span class="err"></span></div>
+        <div class="fld"><label for="up">Password <small>(at least 8 characters)</small></label><input id="up" type="password" autocomplete="new-password"><span class="err"></span></div>
+        <label class="chk"><input type="checkbox" id="unews"> Email me new drops and Diaries entries</label>
+        <button class="btn dark" type="submit" style="justify-self:start">Create account ${ar}</button>
+      </form>
+      <p class="caption" style="margin-top:18px">Prototype: any email and password will work, and nothing leaves your browser. The live site uses WooCommerce accounts.</p>
+    </div>
+    <div class="band" style="padding:clamp(24px,3vw,40px);display:grid;gap:16px;align-content:start">
+      <span class="eyebrow">Why sign in</span>
+      <h2 class="display" style="font-size:clamp(40px,4vw,64px);margin:0">Follow every piece as it’s made</h2>
+      <ul style="list-style:none;margin:0;padding:0;display:grid;gap:12px;color:#dedcd7">
+        <li style="display:flex;gap:12px"><svg width="18" height="18" style="stroke:var(--heart);fill:none;stroke-width:2;flex:none;margin-top:3px"><use href="#i-check"/></svg>See when your made-to-order pieces will be ready</li>
+        <li style="display:flex;gap:12px"><svg width="18" height="18" style="stroke:var(--heart);fill:none;stroke-width:2;flex:none;margin-top:3px"><use href="#i-check"/></svg>Save your address for faster checkout</li>
+        <li style="display:flex;gap:12px"><svg width="18" height="18" style="stroke:var(--heart);fill:none;stroke-width:2;flex:none;margin-top:3px"><use href="#i-check"/></svg>Keep your wishlist on every device</li>
+      </ul>
+    </div>
+  </div>`;
+  document.querySelector(".tabs").addEventListener("click",e=>{ const b=e.target.closest("[data-t]"); if(b) auth(b.dataset.t==="up"?"up":"in") });
+  $("#lost").onclick=()=>{ const v=$("#ie").value.trim(); $("#lostMsg").textContent=okEmail(v)?`A reset link would be sent to ${v}. (Prototype: nothing was sent.)`:"Enter your email above first, then tap “Forgot your password?”." };
+  $("#fin").addEventListener("submit",e=>{ e.preventDefault();
+    const a=check("#ie",okEmail($("#ie").value.trim()),"Enter the email you signed up with."), b=check("#ip",$("#ip").value.length>0,"Enter your password.");
+    if(!(a&&b)) return;
+    const em=$("#ie").value.trim(); const prev=store.get("coa-user-cache",{});
+    store.set("coa-user",{email:em,name:prev[em]||em.split("@")[0]}); toast("Signed in",false); route();
+  });
+  $("#fup").addEventListener("submit",e=>{ e.preventDefault();
+    const a=check("#un",$("#un").value.trim().length>1,"Enter your name."), b=check("#ue",okEmail($("#ue").value.trim()),"Enter an email address like name@example.com."), c=check("#up",$("#up").value.length>=8,"Use at least 8 characters.");
+    if(!(a&&b&&c)) return;
+    const u={email:$("#ue").value.trim(),name:$("#un").value.trim()}; store.set("coa-user",u);
+    const cache=store.get("coa-user-cache",{}); cache[u.email]=u.name; store.set("coa-user-cache",cache);
+    toast("Account created",false); location.hash="overview"; route();
+  });
+}
+
+/* ---------- signed in ---------- */
+const TABS=[["overview","Overview"],["orders","Orders"],["addresses","Address"],["details","Account details"]];
+function dash(t){
+  const u=store.get("coa-user"), orders=store.get("coa-orders",[]), addr=store.get("coa-address",null);
+  if(!TABS.find(x=>x[0]===t)) t="overview";
+  let body="";
+  if(t==="overview"){
+    const o=orders[0];
+    body=`<h1 class="display" style="font-size:clamp(52px,6vw,96px);margin:0 0 6px">Hello, ${esc(u.name.split(" ")[0])}</h1><p class="story" style="font-size:22px;margin:0 0 26px;color:var(--smoke)">Your orders, address and saved pieces.</p>
+    <div class="tiles3">
+      <div class="tile2"><span class="eyebrow">Orders</span><span class="num">${orders.length}</span><a href="#orders">View orders ${ar}</a></div>
+      <div class="tile2"><span class="eyebrow">Wishlist</span><span class="num">${wish.size}</span><a href="wishlist.html">View wishlist ${ar}</a></div>
+      <div class="tile2"><span class="eyebrow">Address</span><span style="font-size:14px">${addr?esc([addr.a1,addr.city].join(", ")):"Not saved yet"}</span><a href="#addresses">${addr?"Edit":"Add"} address ${ar}</a></div>
+    </div>
+    ${o?`<h2 class="display" style="font-size:40px;margin:40px 0 14px">Latest order</h2>${orderCard(o)}`:`<div class="ok-box" style="margin-top:30px"><span class="story">No orders yet.</span><a class="btn dark" href="${curl("new-in")}" style="justify-self:start">Shop new in ${ar}</a></div>`}`;
+  }
+  if(t==="orders") body=`<h1 class="display" style="font-size:clamp(52px,6vw,96px);margin:0 0 20px">Orders</h1>${orders.length?`<div style="display:grid;gap:14px">${orders.map(orderCard).join("")}</div>`:`<div class="ok-box"><span class="story">You haven’t ordered yet.</span><p style="margin:0;color:var(--smoke)">Orders you place appear here, with the date each made-to-order piece will be ready.</p><a class="btn dark" href="${curl("new-in")}" style="justify-self:start">Shop new in ${ar}</a></div>`}`;
+  if(t==="addresses"){ const a=addr||{};
+    body=`<h1 class="display" style="font-size:clamp(52px,6vw,96px);margin:0 0 20px">Delivery address</h1>
+    <form class="form" id="af" novalidate style="max-width:620px">
+      <div class="row2"><div class="fld"><label for="fn">First name</label><input id="fn" value="${esc(a.fn||u.name.split(" ")[0])}"><span class="err"></span></div><div class="fld"><label for="ln">Last name</label><input id="ln" value="${esc(a.ln||u.name.split(" ").slice(1).join(" "))}"><span class="err"></span></div></div>
+      <div class="fld"><label for="a1">Street address</label><input id="a1" value="${esc(a.a1||"")}"><span class="err"></span></div>
+      <div class="fld"><label for="a2">Apartment, complex, unit <small>(optional)</small></label><input id="a2" value="${esc(a.a2||"")}"></div>
+      <div class="row2"><div class="fld"><label for="sub">Suburb</label><input id="sub" value="${esc(a.sub||"")}"><span class="err"></span></div><div class="fld"><label for="city">City</label><input id="city" value="${esc(a.city||"")}"><span class="err"></span></div></div>
+      <div class="row2"><div class="fld"><label for="prov">Province</label><select id="prov">${PROV.map(p=>`<option ${p===(a.prov||"Gauteng")?"selected":""}>${p}</option>`).join("")}</select></div><div class="fld"><label for="pc">Postal code</label><input id="pc" inputmode="numeric" maxlength="4" value="${esc(a.pc||"")}"><span class="err"></span></div></div>
+      <div class="fld"><label for="ph">Mobile number</label><input id="ph" type="tel" value="${esc(a.ph||"")}"><span class="err"></span></div>
+      <button class="btn dark" type="submit" style="justify-self:start">Save address</button>
+    </form>`;
+  }
+  if(t==="details") body=`<h1 class="display" style="font-size:clamp(52px,6vw,96px);margin:0 0 20px">Account details</h1>
+    <form class="form" id="df" novalidate style="max-width:620px">
+      <div class="fld"><label for="dn">Full name</label><input id="dn" value="${esc(u.name)}"><span class="err"></span></div>
+      <div class="fld"><label for="de">Email</label><input id="de" type="email" value="${esc(u.email)}"><span class="err"></span></div>
+      <div class="fld"><label for="dp">New password <small>(leave blank to keep your current one)</small></label><input id="dp" type="password" autocomplete="new-password"><span class="err"></span></div>
+      <button class="btn dark" type="submit" style="justify-self:start">Save changes</button>
+    </form>`;
+  $("#acc").innerHTML=`${crumbs([["My account","account.html"],[TABS.find(x=>x[0]===t)[1]]])}
+  <div class="acct">
+    <nav class="acct-nav" aria-label="Account">${TABS.map(([k,l])=>`<a href="#${k}" class="${k===t?"on":""}" ${k===t?'aria-current="page"':""}>${l}${k==="orders"?` <small>${orders.length}</small>`:""}</a>`).join("")}<a href="wishlist.html">Wishlist <small>${wish.size}</small></a><button id="out">Sign out</button></nav>
+    <div>${body}</div>
+  </div>`;
+  $("#out").onclick=()=>{ store.set("coa-user",null); try{localStorage.removeItem("coa-user")}catch(e){}; toast("Signed out",false); location.hash=""; route() };
+  const af=$("#af"); if(af) af.addEventListener("submit",e=>{ e.preventDefault(); const v=id=>$(id).value.trim();
+    const ok=[check("#fn",!!v("#fn"),"Enter your first name."),check("#ln",!!v("#ln"),"Enter your last name."),check("#a1",v("#a1").length>3,"Enter your street address."),check("#sub",!!v("#sub"),"Enter your suburb."),check("#city",!!v("#city"),"Enter your city."),check("#pc",/^\d{4}$/.test(v("#pc")),"Enter the 4-digit postal code."),check("#ph",v("#ph").replace(/\D/g,"").length>=9||!v("#ph"),"Check the mobile number.")];
+    if(ok.includes(false)) return;
+    store.set("coa-address",{fn:v("#fn"),ln:v("#ln"),a1:v("#a1"),a2:v("#a2"),sub:v("#sub"),city:v("#city"),prov:v("#prov"),pc:v("#pc"),ph:v("#ph")}); toast("Address saved",false) });
+  const df=$("#df"); if(df) df.addEventListener("submit",e=>{ e.preventDefault();
+    const a=check("#dn",$("#dn").value.trim().length>1,"Enter your name."), b=check("#de",okEmail($("#de").value.trim()),"Enter an email address like name@example.com."), c=check("#dp",!$("#dp").value||$("#dp").value.length>=8,"Use at least 8 characters.");
+    if(!(a&&b&&c)) return; store.set("coa-user",{name:$("#dn").value.trim(),email:$("#de").value.trim()}); $("#dp").value=""; toast("Details saved",false) });
+}
+function orderCard(o){
+  const s=status(o);
+  return `<article class="order"><div class="order-head"><div style="display:grid;gap:6px"><b>${esc(o.no)}</b><span style="font-size:13px;color:var(--smoke)">Placed ${fmt(o.date)} · ${o.items.reduce((a,i)=>a+i.q,0)} pieces · ${esc(o.ship)}</span></div><div style="display:grid;gap:6px;justify-items:end"><span class="pill ${s.c}">${s.t}</span><span style="font-size:12.5px;color:var(--smoke)">${s.s}</span></div></div>
+    <div class="thumbs-row">${o.items.map(i=>`<a href="${purl(i.id)}" title="${esc(BY[i.id]?.n||"")} · ${i.s}"><img src="${img(BY[i.id]?.imgs[0])}" alt="${esc(BY[i.id]?.n||"")}"></a>`).join("")}</div>
+    <div style="display:flex;justify-content:space-between;gap:12px;flex-wrap:wrap;align-items:center"><span class="price" style="font-weight:600">${R(o.sub)}</span><span style="display:flex;gap:16px;font-size:13px"><button data-again="${esc(o.no)}" style="text-decoration:underline;text-underline-offset:3px">Order these again</button><a href="contact.html" style="text-decoration:underline;text-underline-offset:3px">Ask about this order</a></span></div></article>`;
+}
+document.addEventListener("click",e=>{ const b=e.target.closest("[data-again]"); if(!b) return; const o=store.get("coa-orders",[]).find(x=>x.no===b.dataset.again); o.items.forEach(i=>BY[i.id]&&COA.add(i.id,i.s,i.q)) });
+
+function route(){
+  const h=(location.hash||"").slice(1);
+  if(!store.get("coa-user",null)) auth(h==="register"?"up":"in"); else dash(h);
+  scrollTo({top:0});
+}
+addEventListener("hashchange",route);
+route();
+})();
+</script>
+</body>
+</html>

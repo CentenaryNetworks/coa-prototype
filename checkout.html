@@ -1,0 +1,125 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="robots" content="noindex, nofollow">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Checkout · Chiefs of Angels</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Big+Shoulders+Display:wght@700;900&display=swap">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Instrument+Serif:ital@0;1&display=swap">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Archivo:wght@400;500;600;700&display=swap">
+<link rel="stylesheet" href="coa.css">
+<style>:root{padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)} body{margin:0}</style>
+</head>
+<body>
+<main id="top"><div class="wrap" id="co"></div></main>
+<script src="coa-data.js"></script>
+<script src="coa.js"></script>
+<script>
+(function(){
+const X=COA; const {mount,$,crumbs,BY,R,esc,img,store,addWorkingDays,fmt,ar,purl,curl}=COA;
+mount("checkout");
+const PROV=["Eastern Cape","Free State","Gauteng","KwaZulu-Natal","Limpopo","Mpumalanga","North West","Northern Cape","Western Cape"];
+const user=store.get("coa-user",null), saved=store.get("coa-address",{});
+
+function summary(){
+  const {sub}=X.bagTotals();
+  return `<aside class="summary" aria-label="Order summary"><h2>Your order</h2>
+    <div class="sum-items">${X.cart.map(c=>{const p=BY[c.id];return `<div class="si"><span class="q"><img src="${img(p.imgs[0])}" alt=""><i>${c.q}</i></span><span><b>${esc(p.n)}</b>Size ${c.s}</span><span class="price">${R(p.p*c.q)}</span></div>`}).join("")}</div>
+    <div class="r"><span>Subtotal</span><span class="price">${R(sub)}</span></div>
+    <div class="r"><span>Delivery</span><span id="shipLbl">Choose a method</span></div>
+    <div class="r tot"><span>Total</span><span class="price" id="totLbl">${R(sub)}</span></div>
+    <small>Prices include VAT. <a href="cart.html" style="text-decoration:underline;text-underline-offset:3px">Edit bag</a></small>
+  </aside>`;
+}
+
+function form(){
+  if(!X.cart.length){ $("#co").innerHTML=`${crumbs([["Your bag","cart.html"],["Checkout"]])}<div class="nf" style="min-height:40vh"><h1 class="display" style="font-size:clamp(56px,8vw,110px)">Nothing to check out</h1><p class="story" style="font-size:24px;margin:0">Your bag is empty.</p><a class="btn dark" href="${curl("new-in")}" style="justify-self:start">Shop new in ${ar}</a></div>`; return }
+  const mto=X.cart.some(c=>BY[c.id].mto);
+  $("#co").innerHTML=`${crumbs([["Your bag","cart.html"],["Checkout"]])}
+  <div class="steps-bar" aria-hidden="true"><span class="on">Bag</span><span class="on">Details</span><span class="on">Delivery</span><span class="on">Payment</span><span>Confirmation</span></div>
+  <div class="co-grid">
+    <form id="cf" class="form" novalidate style="gap:0">
+      <div class="co-sec"><h2><small>01</small>Contact</h2>
+        ${user?`<p style="margin:0">Signed in as <b>${esc(user.email)}</b>. <a href="account.html" style="text-decoration:underline;text-underline-offset:3px">Not you?</a></p>`:`<p style="margin:0;color:var(--smoke)">Have an account? <a href="account.html" style="text-decoration:underline;text-underline-offset:3px">Sign in</a> for faster checkout.</p>`}
+        <div class="row2"><div class="fld"><label for="em">Email</label><input id="em" type="email" autocomplete="email" value="${esc(user?.email||"")}"><span class="err"></span></div>
+        <div class="fld"><label for="ph">Mobile number</label><input id="ph" type="tel" autocomplete="tel" placeholder="e.g. 082 123 4567" value="${esc(saved.ph||"")}"><span class="err"></span></div></div>
+        <label class="chk"><input type="checkbox" id="news"> Email me new drops and Diaries entries</label>
+      </div>
+      <div class="co-sec"><h2><small>02</small>Delivery</h2>
+        <label class="opt"><input type="radio" name="ship" value="courier" checked><span><b>Courier to your door</b><span>Delivery fee and areas set by Chiefs of Angels</span></span><span class="price">At checkout</span></label>
+        <label class="opt"><input type="radio" name="ship" value="collect"><span><b>Collect from the showroom</b><span>16 Victoria Yards, Lorentzville, Johannesburg · by appointment</span></span><span class="price">Free</span></label>
+        <p class="tbc"><b>To confirm with Chiefs of Angels:</b> courier name and fees, and whether showroom collection is offered for online orders. These options are set in WooCommerce shipping.</p>
+        <div id="addr" class="form">
+          <div class="row2"><div class="fld"><label for="fn">First name</label><input id="fn" autocomplete="given-name" value="${esc(saved.fn||user?.name?.split(" ")[0]||"")}"><span class="err"></span></div>
+          <div class="fld"><label for="ln">Last name</label><input id="ln" autocomplete="family-name" value="${esc(saved.ln||user?.name?.split(" ").slice(1).join(" ")||"")}"><span class="err"></span></div></div>
+          <div class="fld"><label for="a1">Street address</label><input id="a1" autocomplete="address-line1" value="${esc(saved.a1||"")}"><span class="err"></span></div>
+          <div class="fld"><label for="a2">Apartment, complex, unit <small>(optional)</small></label><input id="a2" autocomplete="address-line2" value="${esc(saved.a2||"")}"></div>
+          <div class="row2"><div class="fld"><label for="sub">Suburb</label><input id="sub" value="${esc(saved.sub||"")}"><span class="err"></span></div>
+          <div class="fld"><label for="city">City</label><input id="city" autocomplete="address-level2" value="${esc(saved.city||"")}"><span class="err"></span></div></div>
+          <div class="row2"><div class="fld"><label for="prov">Province</label><select id="prov">${PROV.map(p=>`<option ${p===(saved.prov||"Gauteng")?"selected":""}>${p}</option>`).join("")}</select></div>
+          <div class="fld"><label for="pc">Postal code</label><input id="pc" inputmode="numeric" autocomplete="postal-code" maxlength="4" value="${esc(saved.pc||"")}"><span class="err"></span></div></div>
+          <label class="chk"><input type="checkbox" id="saveAddr" checked> Save this address to my account</label>
+        </div>
+      </div>
+      <div class="co-sec"><h2><small>03</small>Payment</h2>
+        <label class="opt"><input type="radio" name="pay" value="gateway" checked><span><b>Pay securely online</b><span>You’ll be taken to the payment provider to finish paying</span></span><svg width="22" height="22" style="stroke:var(--ink);fill:none;stroke-width:1.6"><use href="#i-check"/></svg></label>
+        <p class="tbc"><b>To confirm with Chiefs of Angels:</b> which payment gateway the store uses. The real checkout keeps the existing WooCommerce payment plugin; this prototype never asks for card details.</p>
+        ${mto?`<div class="dispatch"><svg><use href="#i-needle"/></svg><div><b>Made for you, dispatched by ${fmt(addWorkingDays(new Date(),7))}</b><span>Your made-to-order pieces start once payment clears.</span></div></div>`:""}
+        <label class="chk"><input type="checkbox" id="terms"> I agree to the terms and the returns policy</label>
+        <span class="err" id="termsErr" style="color:var(--heart);font-size:12.5px"></span>
+        <button class="btn dark" type="submit" style="justify-content:center;height:58px;margin-top:6px" id="placeBtn">Place order · <span id="placeTot">${R(X.bagTotals().sub)}</span> ${ar}</button>
+        <div class="secure"><svg viewBox="0 0 24 24"><rect x="5" y="10.5" width="14" height="10"/><path d="M8 10.5V7.5a4 4 0 0 1 8 0v3"/></svg>Prototype: no payment is taken and no order reaches the store.</div>
+      </div>
+    </form>
+    ${summary()}
+  </div>`;
+  const ship=()=>document.querySelector('input[name="ship"]:checked').value;
+  function shipUI(){ const c=ship()==="collect"; $("#addr").hidden=c; $("#shipLbl").textContent=c?"Free · collect":"Calculated by the store" }
+  document.querySelectorAll('input[name="ship"]').forEach(r=>r.addEventListener("change",shipUI)); shipUI();
+  $("#cf").addEventListener("submit",place);
+}
+
+function check(id,ok,msg){ const f=$(id).closest(".fld"); f.classList.toggle("bad",!ok); f.querySelector(".err").textContent=ok?"":msg; return ok }
+function place(e){
+  e.preventDefault();
+  const collect=document.querySelector('input[name="ship"]:checked').value==="collect";
+  const v=id=>$(id).value.trim();
+  let ok=[check("#em",/^[^@\s]+@[^@\s]+\.[^@\s]+$/.test(v("#em")),"Enter an email address like name@example.com."),
+          check("#ph",v("#ph").replace(/\D/g,"").length>=9,"Enter a mobile number so the courier can reach you.")];
+  if(!collect) ok=ok.concat([check("#fn",!!v("#fn"),"Enter your first name."),check("#ln",!!v("#ln"),"Enter your last name."),check("#a1",v("#a1").length>3,"Enter your street address."),
+    check("#sub",!!v("#sub"),"Enter your suburb."),check("#city",!!v("#city"),"Enter your city."),check("#pc",/^\d{4}$/.test(v("#pc")),"Enter the 4-digit postal code.")]);
+  const t=$("#terms").checked; $("#termsErr").textContent=t?"":"Tick the box to agree before placing your order."; ok.push(t);
+  if(ok.includes(false)){ (document.querySelector(".fld.bad input")||$("#terms")).focus(); return }
+  const addr={fn:v("#fn"),ln:v("#ln"),a1:v("#a1"),a2:v("#a2"),sub:v("#sub"),city:v("#city"),prov:v("#prov"),pc:v("#pc"),ph:v("#ph")};
+  if(!collect && $("#saveAddr").checked) store.set("coa-address",addr);
+  const orders=store.get("coa-orders",[]);
+  const no="COA-"+(10421+orders.length);
+  const {sub}=X.bagTotals();
+  const mto=X.cart.some(c=>BY[c.id].mto);
+  const order={no,date:new Date().toISOString(),items:X.cart.map(c=>({...c,p:BY[c.id].p})),sub,ship:collect?"Collect from showroom":"Courier",email:v("#em"),addr:collect?null:addr,mto,note:store.get("coa-note","")};
+  store.set("coa-orders",[order,...orders]); store.set("coa-note","");
+  X.setCart([]);
+  done(order);
+}
+function done(o){
+  const d5=addWorkingDays(o.date,5), d7=addWorkingDays(o.date,7);
+  scrollTo({top:0});
+  $("#co").innerHTML=`${crumbs([["Order confirmed"]])}
+  <div class="done">
+    <div class="stamp2">Order<br>${esc(o.no)}<br>received</div>
+    <h1 class="display">Thank you${o.addr?", "+esc(o.addr.fn):""}</h1>
+    <p class="story" style="font-size:24px;margin:0;max-width:40ch">Your order ${esc(o.no)} is in. A confirmation goes to ${esc(o.email)}.</p>
+    <ol class="timeline"><li class="on"><b>Today</b><span>Order placed</span></li><li class="on"><b>${o.mto?`${fmt(d5)} – ${fmt(d7)}`:"Next"}</b><span>${o.mto?"Being made by hand":"Packed in the studio"}</span></li><li><b>${o.mto?`From ${fmt(d7)}`:"Then"}</b><span>${o.ship==="Courier"?"Sent to your door":"Ready to collect at the showroom"}</span></li></ol>
+    <div class="ok-box"><span class="eyebrow">What you ordered</span><div class="thumbs-row">${o.items.map(i=>`<a href="${purl(i.id)}" title="${esc(BY[i.id].n)}"><img src="${img(BY[i.id].imgs[0])}" alt="${esc(BY[i.id].n)}"></a>`).join("")}</div><div class="r" style="display:flex;justify-content:space-between"><span>${o.items.reduce((a,i)=>a+i.q,0)} pieces · ${esc(o.ship)}</span><b class="price">${R(o.sub)}</b></div></div>
+    <div class="cta-row" style="margin:0">${store.get("coa-user",null)?`<a class="btn dark" href="account.html#orders">View in my account ${ar}</a>`:`<a class="btn dark" href="account.html#register">Create an account to follow it ${ar}</a>`}<a class="btn" href="diaries.html">Read the Diaries while you wait</a></div>
+    <p class="caption">Prototype: this order is saved only in your browser so the account pages can show it.</p>
+  </div>`;
+}
+form();
+})();
+</script>
+</body>
+</html>

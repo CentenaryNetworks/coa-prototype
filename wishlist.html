@@ -1,0 +1,44 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="robots" content="noindex, nofollow">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Wishlist · Chiefs of Angels</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Big+Shoulders+Display:wght@700;900&display=swap">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Instrument+Serif:ital@0;1&display=swap">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Archivo:wght@400;500;600;700&display=swap">
+<link rel="stylesheet" href="coa.css">
+<style>:root{padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)} body{margin:0}</style>
+</head>
+<body>
+<main id="top">
+  <div class="wrap">
+    <div id="crumbs"></div>
+    <div class="sec-head" style="margin:18px 0 0"><div><span class="eyebrow" id="cnt"></span><h1 class="display" style="font-size:clamp(56px,7vw,110px);margin:8px 0 0">Wishlist</h1></div><div style="display:flex;gap:18px;align-items:center;flex-wrap:wrap"><button class="link-arrow" id="share">Copy my list</button><a class="link-arrow" href="collection.html#new-in">Keep browsing</a></div></div>
+    <p class="caption" id="shareMsg" aria-live="polite" style="margin-top:10px"></p>
+    <div class="grid" id="grid" style="--cols:4"></div>
+  </div>
+</main>
+<script src="coa-data.js"></script>
+<script src="coa.js"></script>
+<script>
+(function(){
+const {mount,$,crumbs,BY,wish,card,ar,R,onChange}=COA;
+mount("wishlist");
+$("#crumbs").innerHTML=crumbs([["Wishlist"]]);
+function draw(){
+  const ids=[...wish].filter(i=>BY[i]);
+  $("#cnt").textContent=ids.length?`${ids.length} saved piece${ids.length===1?"":"s"} · ${R(ids.reduce((a,i)=>a+BY[i].p,0))} in total`:"Nothing saved yet";
+  $("#grid").innerHTML=ids.length?ids.map(i=>card(i,{eager:true})).join(""):`<div class="empty-grid" style="text-align:left"><span class="story" style="font-size:34px">Save pieces you love.</span><p style="margin:6px 0 22px">Tap the heart on any product and it lands here.</p><a class="btn dark" href="collection.html#new-in">Shop new in ${ar}</a></div>`;
+  $("#share").hidden=!ids.length;
+}
+COA.onChange(draw); draw();
+$("#share").onclick=async()=>{ const t=[...wish].filter(i=>BY[i]).map(i=>`${BY[i].n} (${R(BY[i].p)})`).join("\n");
+  try{ await navigator.clipboard.writeText(t); $("#shareMsg").textContent="List copied. Paste it into a message to share it." }catch(e){ $("#shareMsg").textContent=t } };
+})();
+</script>
+</body>
+</html>

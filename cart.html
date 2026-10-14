@@ -1,0 +1,97 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="robots" content="noindex, nofollow">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Your bag · Chiefs of Angels</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Big+Shoulders+Display:wght@700;900&display=swap">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Instrument+Serif:ital@0;1&display=swap">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Archivo:wght@400;500;600;700&display=swap">
+<link rel="stylesheet" href="coa.css">
+<style>:root{padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)} body{margin:0}</style>
+</head>
+<body>
+<main id="top">
+  <div class="wrap">
+    <div id="crumbs"></div>
+    <div class="sec-head" style="margin:18px 0 0"><div><span class="eyebrow" id="cnt"></span><h1 class="display" style="font-size:clamp(56px,7vw,110px);margin:8px 0 0">Your bag</h1></div><a class="link-arrow" href="collection.html#new-in">Continue shopping</a></div>
+    <div id="cart"></div>
+  </div>
+  <section class="p-section" id="moreSec">
+    <div class="wrap">
+      <div class="sec-head"><div><span class="eyebrow">Pairs well</span><h2 class="display">You might also like</h2></div></div>
+      <div class="p-grid4" id="more"></div>
+    </div>
+  </section>
+</main>
+<script src="coa-data.js"></script>
+<script src="coa.js"></script>
+<script>
+(function(){
+const COAx=COA; const {mount,$,crumbs,BY,P,R,esc,img,card,store,toggleWish,wish,addWorkingDays,fmt,ar,FREE,toast,purl}=COA;
+mount("cart");
+$("#crumbs").innerHTML=crumbs([["Your bag"]]);
+let note=store.get("coa-note","");
+function draw(){
+  const cart=COAx.cart, {count,sub}=COAx.bagTotals();
+  $("#cnt").textContent=count?`${count} piece${count===1?"":"s"}`:"Nothing here yet";
+  if(!cart.length){
+    $("#cart").innerHTML=`<div class="empty" style="padding:70px 0;text-align:left"><span class="story" style="font-size:34px">Your bag is empty.</span><p style="color:var(--smoke);margin:6px 0 22px">Pieces you add will wait here.</p><div class="cta-row" style="margin:0"><a class="btn dark" href="collection.html#new-in">Shop new in ${ar}</a>${wish.size?`<a class="btn" href="wishlist.html">View your wishlist (${wish.size})</a>`:""}</div></div>`;
+  } else {
+    const mto=cart.some(c=>BY[c.id].mto), d7=addWorkingDays(new Date(),7);
+    const saving=cart.reduce((a,c)=>a+(BY[c.id].was?(BY[c.id].was-BY[c.id].p)*c.q:0),0);
+    $("#cart").innerHTML=`<div class="cart-grid">
+      <div>${cart.map((c,i)=>{const p=BY[c.id];return `<div class="c-line">
+        <a href="${purl(p.id)}"><img src="${img(p.imgs[0])}" alt="${esc(p.n)}"></a>
+        <div><h3><a href="${purl(p.id)}">${esc(p.n)}</a></h3><small style="color:var(--smoke)">${p.mto?"Made to order":"Ready-made"}${p.was?` · <span style="color:var(--heart)">On sale</span>`:""}</small>
+          <div class="meta2">
+            ${p.one?`<span style="font-size:13px">One size</span>`:`<label class="sr" for="sz${i}">Size</label><select id="sz${i}" data-size="${i}">${p.sizes.map(s=>`<option ${s===c.s?"selected":""}>${s}</option>`).join("")}</select>`}
+            <div class="qty"><button data-q="-1" data-i="${i}" aria-label="Decrease quantity">−</button><span>${c.q}</span><button data-q="1" data-i="${i}" aria-label="Increase quantity">+</button></div>
+          </div>
+          <div class="links"><button data-save="${i}">${wish.has(p.id)?"Saved to wishlist":"Move to wishlist"}</button><button data-rm="${i}">Remove</button></div>
+        </div>
+        <div class="lt"><span class="price">${R(p.p*c.q)}</span>${c.q>1?`<small>${R(p.p)} each</small>`:""}${p.was?`<small><s>${R(p.was*c.q)}</s></small>`:""}</div>
+      </div>`}).join("")}
+      <div class="fld" style="margin-top:22px"><label for="note">Note for the studio <small>(optional)</small></label><textarea id="note" placeholder="Anything we should know while making your pieces?" style="min-height:90px">${esc(note)}</textarea></div>
+      </div>
+      <aside class="summary" aria-label="Order summary">
+        <h2>Summary</h2>
+        <div class="r"><span>Subtotal</span><span class="price">${R(sub)}</span></div>
+        ${saving?`<div class="r" style="color:var(--heart)"><span>You save</span><span class="price">−${R(saving)}</span></div>`:""}
+        <div class="r"><span>Delivery</span><span>Worked out at checkout</span></div>
+        <div class="ship"><i style="width:${Math.min(100,sub/FREE*100)}%"></i></div>
+        <small>${sub>=FREE?"Free delivery unlocked (example threshold, to confirm with Oscar).":`${R(FREE-sub)} away from free delivery (example threshold).`}</small>
+        <div class="r tot"><span>Total</span><span class="price">${R(sub)}</span></div>
+        ${mto?`<div class="dispatch" style="padding:12px"><svg><use href="#i-needle"/></svg><div><b style="font-size:14px">Made for you by ${fmt(d7)}</b><span style="font-size:12.5px">Made-to-order pieces are finished in 5–7 working days, then sent together.</span></div></div>`:""}
+        <a class="btn dark" href="checkout.html">Checkout ${ar}</a>
+        <small>Prices include VAT. Payment is taken securely at checkout.</small>
+      </aside>
+    </div>`;
+  }
+  const inBag=new Set(cart.map(c=>c.id));
+  const recs=P.filter(p=>!inBag.has(p.id)&&p.isNew).slice(0,4);
+  $("#more").innerHTML=recs.map(p=>card(p.id)).join("");
+  const n=$("#note"); if(n) n.addEventListener("input",e=>{ note=e.target.value; store.set("coa-note",note) });
+}
+$("#cart").addEventListener("click",e=>{
+  const cart=COAx.cart;
+  const q=e.target.closest("[data-q]"), r=e.target.closest("[data-rm]"), s=e.target.closest("[data-save]");
+  if(q){ const c=cart[+q.dataset.i]; c.q+= +q.dataset.q; if(c.q<1) cart.splice(+q.dataset.i,1); COAx.saveCart() }
+  if(r){ const c=cart.splice(+r.dataset.rm,1)[0]; COAx.saveCart(); toast(`Removed ${BY[c.id].n}`,false) }
+  if(s){ const c=cart[+s.dataset.save]; if(!wish.has(c.id)) toggleWish(c.id); cart.splice(+s.dataset.save,1); COAx.saveCart(); toast(`Moved ${BY[c.id].n} to your wishlist`,false) }
+});
+$("#cart").addEventListener("change",e=>{
+  const sel=e.target.closest("[data-size]"); if(!sel) return;
+  const cart=COAx.cart, i=+sel.dataset.size, c=cart[i], dup=cart.findIndex((x,j)=>j!==i&&x.id===c.id&&x.s===sel.value);
+  if(dup>-1){ cart[dup].q+=c.q; cart.splice(i,1) } else c.s=sel.value;
+  COAx.saveCart();
+});
+COA.onChange(draw);
+draw();
+})();
+</script>
+</body>
+</html>

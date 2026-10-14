@@ -1,0 +1,91 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="robots" content="noindex, nofollow">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>FAQ · Chiefs of Angels</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Big+Shoulders+Display:wght@700;900&display=swap">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Instrument+Serif:ital@0;1&display=swap">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Archivo:wght@400;500;600;700&display=swap">
+<link rel="stylesheet" href="coa.css">
+<style>:root{padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)} body{margin:0}</style>
+</head>
+<body>
+<main id="top">
+  <div class="wrap">
+    <div id="crumbs"></div>
+    <header class="pg-hero solo">
+      <div class="c-copy">
+        <span class="eyebrow">Help</span>
+        <h1 class="display">Questions, answered</h1>
+        <p class="story">Orders, sizing, delivery and the brand. Can’t find it here? <a href="contact.html" style="text-decoration:underline;text-underline-offset:4px">Ask the studio.</a></p>
+      </div>
+    </header>
+  </div>
+  <section>
+    <div class="wrap faq-grid">
+      <nav class="faq-nav" id="fnav" aria-label="FAQ sections"></nav>
+      <div>
+        <label class="faq-search"><svg><use href="#i-search"/></svg><span class="sr">Search the FAQ</span><input id="fq" type="search" placeholder="Search questions, e.g. “size” or “showroom”"></label>
+        <div id="faqs"></div>
+        <p id="fnone" hidden class="s-none"><span class="story">No questions match that.</span> <a href="contact.html" style="text-decoration:underline;text-underline-offset:3px">Send us your question instead.</a></p>
+      </div>
+    </div>
+  </section>
+</main>
+<script src="coa-data.js"></script>
+<script src="coa.js"></script>
+<script>
+(function(){
+const {mount,$,crumbs,esc,curl}=COA;
+mount("faq");
+$("#crumbs").innerHTML=crumbs([["FAQ"]]);
+const TBC=t=>`<p class="tbc"><b>Answer needed from Chiefs of Angels.</b> ${t}</p>`;
+/* Answers marked “live site” are the brand’s own FAQ text. Others use facts from the live store; gaps are flagged. */
+const S=[
+ {id:"made-to-order",t:"Orders & made to order",q:[
+   ["How long will my order take?",`<p>Most pieces are made to order. Your garment is cut and finished by hand over 5–7 working days, then sent to you. Each product page shows the expected dispatch dates, counted from the day you order.</p><p>A few pieces, such as caps, aren’t made to order; their dispatch time is shown at checkout.</p>`],
+   ["Can I change or cancel a made-to-order piece?",TBC("Can customers change size or cancel once production has started, and up to when?")],
+   ["How do I follow my order?",`<p>Sign in to <a href="account.html#orders">your account</a> to see each order and where it is in the making process.</p>`],
+   ["What payment methods can I use?",TBC("Which payment gateway and methods does the store use (card, EFT, instant EFT, etc.)?")]]},
+ {id:"sizing",t:"Sizing & fit",q:[
+   ["What sizes do you make?",`<p>Most pieces come in Extra Small to Extra Large (XS, S, M, L, XL). A few, like the Cuddle Multi Patch Jacket, come in a shorter range, which is shown on the product page. Caps are one size.</p>`],
+   ["How do your pieces fit?",`<p>Each product lists its fit under Details, for example boxy, cropped, relaxed or regular. If you’re between sizes, <a href="contact.html">ask the studio</a> before ordering.</p>${TBC("Please supply a measurement chart (chest, waist, length per size) so it can appear on every product page.")}`]]},
+ {id:"delivery",t:"Delivery & returns",q:[
+   ["Where do you deliver, and what does it cost?",TBC("Delivery areas, courier, costs and any free-delivery threshold.")],
+   ["Can I collect my order?",`<p>The Chiefs of Angels showroom is at 16 Victoria Yards, Viljoen Street, Lorentzville, Johannesburg, and visits are by appointment.</p>${TBC("Can online orders be collected from the showroom?")}`],
+   ["What is your returns and exchange policy?",TBC("Returns window, condition, exchanges, and how made-to-order pieces are treated.")]]},
+ {id:"brand",t:"About the brand",q:[
+   ["What do you offer?",`<p>Chiefs of Angels offers high-quality, classically designed and innovative clothing. We pride ourselves on this and strive to deliver the best.</p>`],
+   ["Where can I buy Chiefs of Angels?",`<p>Our products are available on our online store, through wholesale partners, and by appointment in our showroom.</p>`],
+   ["What makes your clothing stand out?",`<p>Uniqueness is one of our core values. We produce pieces from up-cycled, recycled, repurposed and newly made clothing.</p>`],
+   ["What kind of clothing do you make?",`<p>The leather jacket is the label’s core style. Chiefs of Angels creates classic clothing, always with a twist, to complement the timeless leather jacket. <a href="${curl("jackets")}">Shop jackets</a>.</p>`],
+   ["How affordable are your products?",`<p>Our products are priced at the right value for your money. We put quality first, and offer the best quality at an attainable price.</p>`],
+   ["How do I care for my piece?",TBC("Care instructions for leather, suede, denim and hand-distressed cotton.")]]}
+];
+function draw(q=""){
+  const t=q.trim().toLowerCase(); let shown=0;
+  $("#faqs").innerHTML=S.map(s=>{
+    const items=s.q.filter(([qq,a])=>!t||(qq+" "+a.replace(/<[^>]+>/g," ")).toLowerCase().includes(t));
+    shown+=items.length; if(!items.length) return "";
+    const hl=x=>t?esc(x).replace(new RegExp(t.replace(/[.*+?^${}()|[\]\\]/g,"\\$&"),"gi"),m=>`<mark>${m}</mark>`):esc(x);
+    return `<section class="faq-sec" id="${s.id}"><h2>${s.t}</h2>${items.map(([qq,a],i)=>`<details ${t?"open":""}><summary>${hl(qq)}</summary><div class="a">${a}</div></details>`).join("")}</section>`;
+  }).join("");
+  $("#fnone").hidden=shown>0;
+}
+$("#fnav").innerHTML=S.map(s=>`<a href="#${s.id}" data-s="${s.id}">${s.t} <small>${s.q.length}</small></a>`).join("");
+$("#fq").addEventListener("input",e=>draw(e.target.value));
+draw();
+const h=location.hash.slice(1);
+if(h){ const el=document.getElementById(h); if(el){ el.querySelector("details")?.setAttribute("open",""); setTimeout(()=>el.scrollIntoView(),60) } }
+if("IntersectionObserver" in window){
+  const io=new IntersectionObserver(es=>es.forEach(en=>{ if(en.isIntersecting) document.querySelectorAll("#fnav a").forEach(a=>a.classList.toggle("on",a.dataset.s===en.target.id)) }),{rootMargin:"-30% 0px -60% 0px"});
+  document.querySelectorAll(".faq-sec").forEach(s=>io.observe(s));
+}
+})();
+</script>
+</body>
+</html>
