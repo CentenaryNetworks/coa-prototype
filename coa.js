@@ -90,8 +90,11 @@ const sprite=`<svg width="0" height="0" style="position:absolute" aria-hidden="t
   <symbol id="i-check" viewBox="0 0 24 24"><path d="M4.5 12.5l5 5 10-11"/></symbol>
   <symbol id="i-pin" viewBox="0 0 24 24"><path d="M12 21s-6.5-6.2-6.5-11a6.5 6.5 0 0 1 13 0c0 4.8-6.5 11-6.5 11z"/><circle cx="12" cy="10" r="2.3"/></symbol>
   <symbol id="i-phone" viewBox="0 0 24 24"><path d="M6.5 3.5h3l1.5 4.5-2 1.5a11 11 0 0 0 5.5 5.5l1.5-2 4.5 1.5v3a2 2 0 0 1-2 2A16.5 16.5 0 0 1 4.5 5.5a2 2 0 0 1 2-2z"/></symbol>
+  <symbol id="i-ig" viewBox="0 0 24 24"><rect x="3.5" y="3.5" width="17" height="17" rx="4.5"/><circle cx="12" cy="12" r="4"/><circle cx="17.2" cy="6.8" r="1.1" fill="currentColor" stroke="none"/></symbol>
+  <symbol id="i-fb" viewBox="0 0 24 24"><path d="M14.2 21v-7.6h2.6l.4-3h-3V8.5c0-.9.3-1.5 1.5-1.5h1.6V4.3a21 21 0 0 0-2.3-.1c-2.3 0-3.9 1.4-3.9 4v2.2H8.5v3h2.6V21z" fill="currentColor" stroke="none"/></symbol>
   <symbol id="i-mail" viewBox="0 0 24 24"><rect x="3" y="5.5" width="18" height="13"/><path d="M3.5 6l8.5 7 8.5-7"/></symbol>
 </svg>`;
+const social=(cls="")=>`<div class="social ${cls}"><a href="https://www.instagram.com/chiefsofangels/" target="_blank" rel="noopener" aria-label="Chiefs of Angels on Instagram (opens in a new tab)"><svg><use href="#i-ig"/></svg><span>Instagram</span></a><a href="https://www.facebook.com/share/1EuqLNiwb1/" target="_blank" rel="noopener" aria-label="Chiefs of Angels on Facebook (opens in a new tab)"><svg><use href="#i-fb"/></svg><span>Facebook</span></a></div>`;
 const ar=`<svg width="14" height="14" style="stroke:currentColor;fill:none;stroke-width:1.8;flex:none"><use href="#i-arrow"/></svg>`;
 function header(active){
   const a=k=>active===k?' class="on" aria-current="page"':"";
@@ -127,7 +130,7 @@ const footer=`<section class="join" id="join"><div class="wrap join-grid">
 </div></section>
 <footer><div class="wrap">
   <div class="foot-grid">
-    <div><img class="foot-logo" src="img/logo.png" alt="Chiefs of Angels"><p style="max-width:34ch;margin-top:18px">Spiritual, rebellious and timeless. Up-cycled, recycled, repurposed and newly made clothing with a rock ’n’ roll sensibility.</p><p style="margin-top:14px">16 Victoria Yards, Viljoen Street, Lorentzville, Johannesburg</p></div>
+    <div><img class="foot-logo" src="img/logo.png" alt="Chiefs of Angels"><p style="max-width:34ch;margin-top:18px">Spiritual, rebellious and timeless. Up-cycled, recycled, repurposed and newly made clothing with a rock ’n’ roll sensibility.</p><p style="margin-top:14px">16 Victoria Yards, Viljoen Street, Lorentzville, Johannesburg</p>${social("foot-social")}</div>
     <div><h4>Shop</h4><ul><li><a href="${curl("new-in")}">New In</a></li><li><a href="${curl("shop")}">Shop all</a></li><li><a href="${curl("jackets")}">Jackets</a></li><li><a href="${curl("accessories")}">Accessories</a></li><li><a href="${curl("sale")}">Sale</a></li></ul></div>
     <div><h4>Help</h4><ul><li><a href="faq.html">FAQ</a></li><li><a href="faq.html#delivery">Delivery &amp; returns</a></li><li><a href="contact.html">Contact us</a></li><li><a href="account.html">My account</a></li><li><a href="cart.html">Your bag</a></li></ul></div>
     <div><h4>Brand</h4><ul><li><a href="about.html">About us</a></li><li><a href="about.html#services">Services</a></li><li><a href="diaries.html">COA Diaries</a></li><li><a href="contact.html#showroom">Showroom</a></li></ul></div>
@@ -158,6 +161,7 @@ const footer=`<section class="join" id="join"><div class="wrap join-grid">
   <a href="wishlist.html">Wishlist</a>
   <a href="account.html">My account</a>
   <a href="contact.html">Contact</a>
+  ${social("menu-social")}
 </nav>
 <div class="search" id="search" role="dialog" aria-label="Search" aria-hidden="true">
   <div class="wrap">

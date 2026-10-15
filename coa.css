@@ -888,3 +888,13 @@ mark{background:#f4d6d7;color:inherit}
   .review-panel{left:auto;right:0}
   .sticky-buy.on ~ .review-wrap,body:has(.sticky-buy.on) .review-wrap{bottom:calc(84px + env(safe-area-inset-bottom,0px))}
 }
+
+/* social links */
+.social{display:flex;gap:10px;flex-wrap:wrap}
+.social a{display:inline-flex;align-items:center;gap:9px;height:40px;padding:0 14px 0 10px;border:1px solid currentColor;font:600 11px/1 var(--sans);letter-spacing:.14em;text-transform:uppercase;transition:background .2s,color .2s,border-color .2s}
+.social svg{width:20px;height:20px;stroke:currentColor;fill:none;stroke-width:1.6;flex:none}
+.foot-social{margin-top:20px;color:#e9e7e2}
+.foot-social a:hover{background:#fff;color:var(--ink);border-color:#fff}
+.menu-social{margin-top:22px;color:var(--ink)}
+.menu-social a:hover{background:var(--ink);color:#fff}
+.ccard .acts a[target]{display:inline-flex;align-items:center}
