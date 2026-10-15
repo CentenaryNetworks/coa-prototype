@@ -1,11 +1,19 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="robots" content="noindex, nofollow">
 <title>Chiefs of Angels Homepage</title>
-<meta name="claude:viewport-fit-sides" content="cover">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Big+Shoulders+Display:wght@700;900&display=swap">
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Instrument+Serif:ital@0;1&display=swap">
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Archivo:wght@400;500;600;700&display=swap">
 <link rel="stylesheet" href="coa.css">
+<style>:root{padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)} body{margin:0}</style>
+</head>
+<body>
 <main id="top">
 
 <!-- HERO -->
@@ -13,8 +21,8 @@
   <div class="hero-grid">
     <div class="hero-media">
       <div class="slide on"><img src="img/cat-logothreads.jpg" alt="Model in sunglasses, COA beanie and black logo hoodie, lit against a black backdrop"></div>
-      <div class="slide"><img src="img/cat-jackets.jpg" alt="Model in a black leather jacket against a weathered white wall" loading="lazy" style="object-position:22% 30%"></div>
       <div class="slide"><img src="img/cat-loungewear.jpg" alt="Model in a black sweater with a red heart patch against a brick wall" loading="lazy"></div>
+      <div class="slide"><img src="img/cat-jackets.jpg" alt="Model in a black leather jacket against a weathered white wall" loading="lazy" style="object-position:22% 30%"></div>
     </div>
     <div class="hero-copy">
       <div class="txt" id="heroTxt">
@@ -28,8 +36,8 @@
       </div>
       <div class="chapters" role="tablist" aria-label="Choose a story">
         <button class="on" role="tab" aria-selected="true" data-i="0"><div class="bar"><i></i></div><span>Logo Threads</span></button>
-        <button role="tab" aria-selected="false" data-i="1"><div class="bar"><i></i></div><span>The Final Layer</span></button>
-        <button role="tab" aria-selected="false" data-i="2"><div class="bar"><i></i></div><span>Heart Supplies</span></button>
+        <button role="tab" aria-selected="false" data-i="1"><div class="bar"><i></i></div><span>Heart Supplies</span></button>
+        <button role="tab" aria-selected="false" data-i="2"><div class="bar"><i></i></div><span>The Final Layer</span></button>
       </div>
     </div>
   </div>
@@ -149,8 +157,8 @@ $("#layerGrid").innerHTML=["aretha-leather-jacket","core-joplin-jacket","studded
 /* hero */
 const H=[
   {e:"Logo Threads",h:["Style starts","with the","basics."],p:"Clean, versatile garments that carry the symbol that defines the brand.",c:"Shop Logo Threads",href:"collection.html#logo-threads"},
-  {e:"Outerwear · Jackets",h:["The final","layer."],p:"Built to be worn, lived in, and shaped by the journey of the wearer.",c:"Shop Jackets",href:"collection.html#jackets"},
-  {e:"Heart Supplies",h:["Worn on","the sleeve."],p:"The heart stands for the things that move us from within, expressed outwardly.",c:"Shop Heart Supplies",href:"collection.html#heart-supplies"}
+  {e:"Heart Supplies",h:["Worn on","the sleeve."],p:"The heart stands for the things that move us from within, expressed outwardly.",c:"Shop Heart Supplies",href:"collection.html#heart-supplies"},
+  {e:"Outerwear · Jackets",h:["The final","layer."],p:"Built to be worn, lived in, and shaped by the journey of the wearer.",c:"Shop Jackets",href:"collection.html#jackets"}
 ];
 const slides=[...document.querySelectorAll(".slide")], tabs=[...document.querySelectorAll(".chapters button")], hero=$("#hero"), txt=$("#heroTxt");
 let cur=0,timer; const DUR=6500;
@@ -218,3 +226,5 @@ if("IntersectionObserver" in window && !matchMedia("(prefers-reduced-motion: red
 }
 })();
 </script>
+</body>
+</html>
