@@ -898,3 +898,10 @@ mark{background:#f4d6d7;color:inherit}
 .menu-social{margin-top:22px;color:var(--ink)}
 .menu-social a:hover{background:var(--ink);color:#fff}
 .ccard .acts a[target]{display:inline-flex;align-items:center}
+
+/* payments + exchange policy */
+.payflex-line{margin:8px 0 0;font-size:13.5px;color:var(--smoke)}
+.payflex-line b{color:var(--ink);font-weight:600}
+.final-sale{margin:0;font-size:13px;color:var(--heart);font-weight:600;display:flex;gap:8px;align-items:flex-start}
+.final-sale::before{content:"";width:6px;height:6px;margin-top:6px;background:var(--heart);transform:rotate(45deg);flex:none}
+.drawer .sum #shipMsg b{color:var(--ink)}

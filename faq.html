@@ -50,21 +50,23 @@ const S=[
    ["How long will my order take?",`<p>Most pieces are made to order. Your garment is cut and finished by hand over 5–7 working days, then sent to you. Each product page shows the expected dispatch dates, counted from the day you order.</p><p>A few pieces, such as caps, aren’t made to order; their dispatch time is shown at checkout.</p>`],
    ["Can I change or cancel a made-to-order piece?",TBC("Can customers change size or cancel once production has started, and up to when?")],
    ["How do I follow my order?",`<p>Sign in to <a href="account.html#orders">your account</a> to see each order and where it is in the making process.</p>`],
-   ["What payment methods can I use?",TBC("Which payment gateway and methods does the store use (card, EFT, instant EFT, etc.)?")]]},
+   ["What payment methods can I use?",`<p>You can pay with <b>PayFast</b> (card, instant EFT and other PayFast methods) or <b>PayFlex</b>, which splits your order into 4 interest-free payments over 6 weeks. Both are chosen at checkout.</p>`]]},
  {id:"sizing",t:"Sizing & fit",q:[
    ["What sizes do you make?",`<p>Most pieces come in Extra Small to Extra Large (XS, S, M, L, XL). A few, like the Cuddle Multi Patch Jacket, come in a shorter range, which is shown on the product page. Caps are one size.</p>`],
-   ["How do your pieces fit?",`<p>Each product lists its fit under Details, for example boxy, cropped, relaxed or regular. If you’re between sizes, <a href="contact.html">ask the studio</a> before ordering.</p>${TBC("Please supply a measurement chart (chest, waist, length per size) so it can appear on every product page.")}`]]},
- {id:"delivery",t:"Delivery & returns",q:[
-   ["Where do you deliver, and what does it cost?",TBC("Delivery areas, courier, costs and any free-delivery threshold.")],
-   ["Can I collect my order?",`<p>The Chiefs of Angels showroom is at 16 Victoria Yards, Viljoen Street, Lorentzville, Johannesburg, and visits are by appointment.</p>${TBC("Can online orders be collected from the showroom?")}`],
-   ["What is your returns and exchange policy?",TBC("Returns window, condition, exchanges, and how made-to-order pieces are treated.")]]},
+   ["How do your pieces fit?",`<p>Each product lists its fit under Details, for example boxy, cropped, relaxed or regular. If you’re between sizes, <a href="contact.html">ask the studio</a> before ordering.</p>${TBC("Size chart being produced by Chiefs of Angels (chest, waist and length per size). It will appear here and on every product page.")}`]]},
+ {id:"delivery",t:"Delivery & exchanges",q:[
+   ["How is my order delivered, and what does it cost?",`<p>We ship with <b>The Courier Guy</b> (standard shipping). The shipping fee is calculated at checkout from your delivery address, so you see the exact amount before you pay.</p><p>Made-to-order pieces are sent once they’re finished, 5–7 working days after you order.</p>`],
+   ["Do you offer free delivery?",`<p>Not at the moment. Shipping is charged on every order at The Courier Guy’s standard rate.</p>`],
+   ["Can I collect my order?",`<p>Yes. Choose <b>Collect from our Melrose flagship store</b> at checkout and we’ll let you know when your order is ready. A shipping fee still applies to collections.</p>${TBC("Melrose flagship store street address and collection hours.")}`],
+   ["What is your exchange and returns policy?",`<p>Chiefs of Angels accepts exchanges or returns within <b>14 calendar days</b> of the purchase date. Please show your digital receipt, and the goods must be unused and undamaged.</p><p><b>Not eligible for returns or exchanges:</b> sale items, discounted merchandise and headgear. These are marked “Final sale” on the product page.</p>`],
+   ["How do I start an exchange or return?",`<p><a href="contact.html">Contact us</a> within 14 days of your purchase with your order number and digital receipt, and tell us whether you’d like an exchange or a return.</p>`]]},
  {id:"brand",t:"About the brand",q:[
    ["What do you offer?",`<p>Chiefs of Angels offers high-quality, classically designed and innovative clothing. We pride ourselves on this and strive to deliver the best.</p>`],
    ["Where can I buy Chiefs of Angels?",`<p>Our products are available on our online store, through wholesale partners, and by appointment in our showroom.</p>`],
    ["What makes your clothing stand out?",`<p>Uniqueness is one of our core values. We produce pieces from up-cycled, recycled, repurposed and newly made clothing.</p>`],
    ["What kind of clothing do you make?",`<p>The leather jacket is the label’s core style. Chiefs of Angels creates classic clothing, always with a twist, to complement the timeless leather jacket. <a href="${curl("jackets")}">Shop jackets</a>.</p>`],
    ["How affordable are your products?",`<p>Our products are priced at the right value for your money. We put quality first, and offer the best quality at an attainable price.</p>`],
-   ["How do I care for my piece?",TBC("Care instructions for leather, suede, denim and hand-distressed cotton.")]]}
+   ["How do I care for my piece?",TBC("Care guides being produced by Chiefs of Angels (leather, suede, denim and hand-distressed cotton). They will appear here and on each product page.")]]}
 ];
 function draw(q=""){
   const t=q.trim().toLowerCase(); let shown=0;

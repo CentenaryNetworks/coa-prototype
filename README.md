@@ -26,25 +26,28 @@ Prepared by MPL AI (NewMPL Ventures) for Centenary Networks. Product names, pric
 
 Search: the magnifier in the header, or press `/`.
 
-## Answers needed from Chiefs of Angels
+## Store details confirmed by Chiefs of Angels (21 Oct 2026)
+
+Now reflected across the bag, checkout, product pages and FAQ:
+
+- **Shipping:** The Courier Guy, standard shipping. The fee is calculated at checkout from the address. There is no free-delivery threshold.
+- **Collection:** from the Melrose flagship store. A shipping fee still applies.
+- **Payments:** PayFast and PayFlex (4 interest-free payments over 6 weeks).
+- **Exchange policy:** exchanges or returns within 14 calendar days of purchase with a digital receipt, if goods are unused and undamaged. Sale items, discounted merchandise and headgear are not eligible; these show as "Final sale".
+- **Duplicate listings** (e.g. Rock Stars Never Die Tee) are intentional: limited stock options.
+
+## Still open
 
 These show as red "Answer needed" boxes in the prototype:
 
-1. Delivery areas, courier and fees (and any free-delivery threshold; the bag uses an example of R2,500)
-2. Whether online orders can be collected from the Victoria Yards showroom
-3. Returns and exchange policy, and cancellations for made-to-order pieces
-4. Which payment gateway the store uses
-5. Care instructions (leather, suede, denim, hand-distressed cotton)
-6. A size chart (chest, waist and length per size)
+1. **Size chart:** being produced by Chiefs of Angels
+2. **Care instructions:** being produced by Chiefs of Angels
+3. **Melrose flagship store:** street address and collection hours. Also confirm whether the Victoria Yards address on the current site is still in use.
+4. **Made-to-order changes:** can a size be changed or an order cancelled once production starts?
 
-## Content to check
+## Images
 
-- **Diaries photos:** the archive photos of musicians in "The Story Beneath the Sound" come from the live page. Confirm usage rights.
-- **Lookbook:** looks 3 and 5 in the Skool of Rock story have no caption on the live page; the "Shop the look" pieces were matched by eye.
-- **Duplicate products:** three "Rock Stars Never Die Tee" and two "Logo Fitted Tee" listings. Rename them if they are different colourways.
-- **Outlaw Sleeveless Leather Jacket:** its description field contains Divi builder code and needs rewriting.
-- **Page addresses:** the live Skool of Rock page sits at `/auto-draft/`, and a separate ROOTS page repeats the Diaries content.
-- **Copy edits made:** "reritten" corrected to "rewritten"; the "second-largest polluter" claim removed from About.
+The COA Diaries story images were sourced from Pinterest and their usage rights have not been checked. They are fine for internal review but should be licensed or replaced before the new site goes live.
 
 ## How it's built
 

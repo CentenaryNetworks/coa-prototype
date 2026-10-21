@@ -31,7 +31,7 @@
 <script src="coa.js"></script>
 <script>
 (function(){
-const COAx=COA; const {mount,$,crumbs,BY,P,R,esc,img,card,store,toggleWish,wish,addWorkingDays,fmt,ar,FREE,toast,purl}=COA;
+const COAx=COA; const {mount,$,crumbs,BY,P,R,esc,img,card,store,toggleWish,wish,addWorkingDays,fmt,ar,toast,purl,returnable,payflex}=COA;
 mount("cart");
 $("#crumbs").innerHTML=crumbs([["Your bag"]]);
 let note=store.get("coa-note","");
@@ -61,13 +61,13 @@ function draw(){
         <h2>Summary</h2>
         <div class="r"><span>Subtotal</span><span class="price">${R(sub)}</span></div>
         ${saving?`<div class="r" style="color:var(--heart)"><span>You save</span><span class="price">−${R(saving)}</span></div>`:""}
-        <div class="r"><span>Delivery</span><span>Worked out at checkout</span></div>
-        <div class="ship"><i style="width:${Math.min(100,sub/FREE*100)}%"></i></div>
-        <small>${sub>=FREE?"Free delivery unlocked (example threshold, to confirm with Oscar).":`${R(FREE-sub)} away from free delivery (example threshold).`}</small>
-        <div class="r tot"><span>Total</span><span class="price">${R(sub)}</span></div>
+        <div class="r"><span>Shipping</span><span>The Courier Guy · at checkout</span></div>
+        <div class="r tot"><span>Total before shipping</span><span class="price">${R(sub)}</span></div>
+        <p class="payflex-line" style="margin:0">${payflex(sub)}</p>
+        ${cart.some(c=>!returnable(BY[c.id]))?`<p class="final-sale" style="margin:0">Your bag includes final-sale pieces (sale items or headgear) that can’t be returned or exchanged.</p>`:""}
         ${mto?`<div class="dispatch" style="padding:12px"><svg><use href="#i-needle"/></svg><div><b style="font-size:14px">Made for you by ${fmt(d7)}</b><span style="font-size:12.5px">Made-to-order pieces are finished in 5–7 working days, then sent together.</span></div></div>`:""}
         <a class="btn dark" href="checkout.html">Checkout ${ar}</a>
-        <small>Prices include VAT. Payment is taken securely at checkout.</small>
+        <small>Prices include VAT. Pay securely with PayFast or PayFlex at checkout.</small>
       </aside>
     </div>`;
   }

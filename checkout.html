@@ -19,7 +19,7 @@
 <script src="coa.js"></script>
 <script>
 (function(){
-const X=COA; const {mount,$,crumbs,BY,R,esc,img,store,addWorkingDays,fmt,ar,purl,curl}=COA;
+const X=COA; const {mount,$,crumbs,BY,R,esc,img,store,addWorkingDays,fmt,ar,purl,curl,returnable,payflex,Rc}=COA;
 mount("checkout");
 const PROV=["Eastern Cape","Free State","Gauteng","KwaZulu-Natal","Limpopo","Mpumalanga","North West","Northern Cape","Western Cape"];
 const user=store.get("coa-user",null), saved=store.get("coa-address",{});
@@ -29,8 +29,9 @@ function summary(){
   return `<aside class="summary" aria-label="Order summary"><h2>Your order</h2>
     <div class="sum-items">${X.cart.map(c=>{const p=BY[c.id];return `<div class="si"><span class="q"><img src="${img(p.imgs[0])}" alt=""><i>${c.q}</i></span><span><b>${esc(p.n)}</b>Size ${c.s}</span><span class="price">${R(p.p*c.q)}</span></div>`}).join("")}</div>
     <div class="r"><span>Subtotal</span><span class="price">${R(sub)}</span></div>
-    <div class="r"><span>Delivery</span><span id="shipLbl">Choose a method</span></div>
-    <div class="r tot"><span>Total</span><span class="price" id="totLbl">${R(sub)}</span></div>
+    <div class="r"><span>Shipping</span><span id="shipLbl">Choose a method</span></div>
+    <div class="r tot"><span>Total</span><span class="price" id="totLbl">${R(sub)} + shipping</span></div>
+    ${X.cart.some(c=>!returnable(BY[c.id]))?`<p class="final-sale" style="margin:0">Includes final-sale pieces that can’t be returned or exchanged.</p>`:""}
     <small>Prices include VAT. <a href="cart.html" style="text-decoration:underline;text-underline-offset:3px">Edit bag</a></small>
   </aside>`;
 }
@@ -49,9 +50,9 @@ function form(){
         <label class="chk"><input type="checkbox" id="news"> Email me new drops and Diaries entries</label>
       </div>
       <div class="co-sec"><h2><small>02</small>Delivery</h2>
-        <label class="opt"><input type="radio" name="ship" value="courier" checked><span><b>Courier to your door</b><span>Delivery fee and areas set by Chiefs of Angels</span></span><span class="price">At checkout</span></label>
-        <label class="opt"><input type="radio" name="ship" value="collect"><span><b>Collect from the showroom</b><span>16 Victoria Yards, Lorentzville, Johannesburg · by appointment</span></span><span class="price">Free</span></label>
-        <p class="tbc"><b>To confirm with Chiefs of Angels:</b> courier name and fees, and whether showroom collection is offered for online orders. These options are set in WooCommerce shipping.</p>
+        <label class="opt"><input type="radio" name="ship" value="courier" checked><span><b>The Courier Guy · standard delivery</b><span>Delivered to your door. The fee is calculated from your address.</span></span><span class="price">Live rate</span></label>
+        <label class="opt"><input type="radio" name="ship" value="collect"><span><b>Collect from our Melrose flagship store</b><span>We’ll let you know when your order is ready. A shipping fee still applies.</span></span><span class="price">Fee applies</span></label>
+        <p class="caption">In the live store, The Courier Guy plugin fetches the real shipping rate for the address entered.</p>
         <div id="addr" class="form">
           <div class="row2"><div class="fld"><label for="fn">First name</label><input id="fn" autocomplete="given-name" value="${esc(saved.fn||user?.name?.split(" ")[0]||"")}"><span class="err"></span></div>
           <div class="fld"><label for="ln">Last name</label><input id="ln" autocomplete="family-name" value="${esc(saved.ln||user?.name?.split(" ").slice(1).join(" ")||"")}"><span class="err"></span></div></div>
@@ -65,20 +66,22 @@ function form(){
         </div>
       </div>
       <div class="co-sec"><h2><small>03</small>Payment</h2>
-        <label class="opt"><input type="radio" name="pay" value="gateway" checked><span><b>Pay securely online</b><span>You’ll be taken to the payment provider to finish paying</span></span><svg width="22" height="22" style="stroke:var(--ink);fill:none;stroke-width:1.6"><use href="#i-check"/></svg></label>
-        <p class="tbc"><b>To confirm with Chiefs of Angels:</b> which payment gateway the store uses. The real checkout keeps the existing WooCommerce payment plugin; this prototype never asks for card details.</p>
+        <label class="opt"><input type="radio" name="pay" value="PayFast" checked><span><b>PayFast</b><span>Card, instant EFT and other PayFast methods. You’ll finish paying on PayFast’s secure page.</span></span><svg width="22" height="22" style="stroke:var(--ink);fill:none;stroke-width:1.6"><use href="#i-check"/></svg></label>
+        <label class="opt"><input type="radio" name="pay" value="PayFlex"><span><b>PayFlex</b><span>Split your order into 4 interest-free payments over 6 weeks: <span id="pfAmt">${payflex(X.bagTotals().sub).replace("or 4 interest-free payments of ","").replace(" with PayFlex","")}</span> today (plus shipping), then 3 more.</span></span><svg width="22" height="22" style="stroke:var(--ink);fill:none;stroke-width:1.6"><use href="#i-check"/></svg></label>
+        <p class="caption">This prototype never asks for card details. The live checkout keeps the store’s PayFast and PayFlex plugins.</p>
         ${mto?`<div class="dispatch"><svg><use href="#i-needle"/></svg><div><b>Made for you, dispatched by ${fmt(addWorkingDays(new Date(),7))}</b><span>Your made-to-order pieces start once payment clears.</span></div></div>`:""}
-        <label class="chk"><input type="checkbox" id="terms"> I agree to the terms and the returns policy</label>
+        <label class="chk"><input type="checkbox" id="terms"> <span>I agree to the terms and the <a href="faq.html#delivery" target="_blank" style="text-decoration:underline;text-underline-offset:3px">exchange policy</a> (14 days; sale items and headgear excluded)</span></label>
         <span class="err" id="termsErr" style="color:var(--heart);font-size:12.5px"></span>
-        <button class="btn dark" type="submit" style="justify-content:center;height:58px;margin-top:6px" id="placeBtn">Place order · <span id="placeTot">${R(X.bagTotals().sub)}</span> ${ar}</button>
+        <button class="btn dark" type="submit" style="justify-content:center;height:58px;margin-top:6px" id="placeBtn"><span id="placeTxt">Pay with PayFast</span> · <span id="placeTot">${R(X.bagTotals().sub)}</span> + shipping ${ar}</button>
         <div class="secure"><svg viewBox="0 0 24 24"><rect x="5" y="10.5" width="14" height="10"/><path d="M8 10.5V7.5a4 4 0 0 1 8 0v3"/></svg>Prototype: no payment is taken and no order reaches the store.</div>
       </div>
     </form>
     ${summary()}
   </div>`;
   const ship=()=>document.querySelector('input[name="ship"]:checked').value;
-  function shipUI(){ const c=ship()==="collect"; $("#addr").hidden=c; $("#shipLbl").textContent=c?"Free · collect":"Calculated by the store" }
+  function shipUI(){ const c=ship()==="collect"; $("#addr").hidden=c; $("#shipLbl").textContent=c?"Collection · fee applies":"The Courier Guy · live rate" }
   document.querySelectorAll('input[name="ship"]').forEach(r=>r.addEventListener("change",shipUI)); shipUI();
+  document.querySelectorAll('input[name="pay"]').forEach(r=>r.addEventListener("change",()=>{ $("#placeTxt").textContent="Pay with "+document.querySelector('input[name="pay"]:checked').value }));
   $("#cf").addEventListener("submit",place);
 }
 
@@ -99,7 +102,7 @@ function place(e){
   const no="COA-"+(10421+orders.length);
   const {sub}=X.bagTotals();
   const mto=X.cart.some(c=>BY[c.id].mto);
-  const order={no,date:new Date().toISOString(),items:X.cart.map(c=>({...c,p:BY[c.id].p})),sub,ship:collect?"Collect from showroom":"Courier",email:v("#em"),addr:collect?null:addr,mto,note:store.get("coa-note","")};
+  const order={no,date:new Date().toISOString(),items:X.cart.map(c=>({...c,p:BY[c.id].p})),sub,ship:collect?"Collect from Melrose flagship":"Courier",pay:document.querySelector('input[name="pay"]:checked').value,email:v("#em"),addr:collect?null:addr,mto,note:store.get("coa-note","")};
   store.set("coa-orders",[order,...orders]); store.set("coa-note","");
   X.setCart([]);
   done(order);
@@ -112,8 +115,8 @@ function done(o){
     <div class="stamp2">Order<br>${esc(o.no)}<br>received</div>
     <h1 class="display">Thank you${o.addr?", "+esc(o.addr.fn):""}</h1>
     <p class="story" style="font-size:24px;margin:0;max-width:40ch">Your order ${esc(o.no)} is in. A confirmation goes to ${esc(o.email)}.</p>
-    <ol class="timeline"><li class="on"><b>Today</b><span>Order placed</span></li><li class="on"><b>${o.mto?`${fmt(d5)} – ${fmt(d7)}`:"Next"}</b><span>${o.mto?"Being made by hand":"Packed in the studio"}</span></li><li><b>${o.mto?`From ${fmt(d7)}`:"Then"}</b><span>${o.ship==="Courier"?"Sent to your door":"Ready to collect at the showroom"}</span></li></ol>
-    <div class="ok-box"><span class="eyebrow">What you ordered</span><div class="thumbs-row">${o.items.map(i=>`<a href="${purl(i.id)}" title="${esc(BY[i.id].n)}"><img src="${img(BY[i.id].imgs[0])}" alt="${esc(BY[i.id].n)}"></a>`).join("")}</div><div class="r" style="display:flex;justify-content:space-between"><span>${o.items.reduce((a,i)=>a+i.q,0)} pieces · ${esc(o.ship)}</span><b class="price">${R(o.sub)}</b></div></div>
+    <ol class="timeline"><li class="on"><b>Today</b><span>Order placed</span></li><li class="on"><b>${o.mto?`${fmt(d5)} – ${fmt(d7)}`:"Next"}</b><span>${o.mto?"Being made by hand":"Packed in the studio"}</span></li><li><b>${o.mto?`From ${fmt(d7)}`:"Then"}</b><span>${o.ship==="Courier"?"Sent with The Courier Guy":"Ready to collect in Melrose"}</span></li></ol>
+    <div class="ok-box"><span class="eyebrow">What you ordered</span><div class="thumbs-row">${o.items.map(i=>`<a href="${purl(i.id)}" title="${esc(BY[i.id].n)}"><img src="${img(BY[i.id].imgs[0])}" alt="${esc(BY[i.id].n)}"></a>`).join("")}</div><div class="r" style="display:flex;justify-content:space-between"><span>${o.items.reduce((a,i)=>a+i.q,0)} pieces · ${esc(o.ship)} · ${esc(o.pay||"PayFast")}</span><b class="price">${R(o.sub)}</b></div></div>
     <div class="cta-row" style="margin:0">${store.get("coa-user",null)?`<a class="btn dark" href="account.html#orders">View in my account ${ar}</a>`:`<a class="btn dark" href="account.html#register">Create an account to follow it ${ar}</a>`}<a class="btn" href="diaries.html">Read the Diaries while you wait</a></div>
     <p class="caption">Prototype: this order is saved only in your browser so the account pages can show it.</p>
   </div>`;

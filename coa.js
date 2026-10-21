@@ -132,7 +132,7 @@ const footer=`<section class="join" id="join"><div class="wrap join-grid">
   <div class="foot-grid">
     <div><img class="foot-logo" src="img/logo.png" alt="Chiefs of Angels"><p style="max-width:34ch;margin-top:18px">Spiritual, rebellious and timeless. Up-cycled, recycled, repurposed and newly made clothing with a rock ’n’ roll sensibility.</p><p style="margin-top:14px">16 Victoria Yards, Viljoen Street, Lorentzville, Johannesburg</p>${social("foot-social")}</div>
     <div><h4>Shop</h4><ul><li><a href="${curl("new-in")}">New In</a></li><li><a href="${curl("shop")}">Shop all</a></li><li><a href="${curl("jackets")}">Jackets</a></li><li><a href="${curl("accessories")}">Accessories</a></li><li><a href="${curl("sale")}">Sale</a></li></ul></div>
-    <div><h4>Help</h4><ul><li><a href="faq.html">FAQ</a></li><li><a href="faq.html#delivery">Delivery &amp; returns</a></li><li><a href="contact.html">Contact us</a></li><li><a href="account.html">My account</a></li><li><a href="cart.html">Your bag</a></li></ul></div>
+    <div><h4>Help</h4><ul><li><a href="faq.html">FAQ</a></li><li><a href="faq.html#delivery">Delivery &amp; exchanges</a></li><li><a href="contact.html">Contact us</a></li><li><a href="account.html">My account</a></li><li><a href="cart.html">Your bag</a></li></ul></div>
     <div><h4>Brand</h4><ul><li><a href="about.html">About us</a></li><li><a href="about.html#services">Services</a></li><li><a href="diaries.html">COA Diaries</a></li><li><a href="contact.html#showroom">Showroom</a></li></ul></div>
   </div>
   <div class="legal"><span>© Chiefs of Angels 2026</span><span>Prototype v4 for team review · payments, accounts and emails are simulated · not the live store</span></div>
@@ -145,9 +145,9 @@ const footer=`<section class="join" id="join"><div class="wrap join-grid">
   <header><h2>Your bag</h2><button class="icon-btn" id="closeBag" aria-label="Close bag"><svg><use href="#i-x"/></svg></button></header>
   <div class="items" id="items"></div>
   <footer class="sum">
-    <small id="shipMsg"></small><div class="ship"><i id="shipBar" style="width:0"></i></div>
+    <small id="shipMsg"></small>
     <div class="row"><span>Subtotal</span><span class="price" id="subtotal">R0</span></div>
-    <small>Delivery is worked out at checkout. Made-to-order pieces ship within 5–7 working days.</small>
+    <small>Shipped with The Courier Guy. The shipping fee is worked out at checkout from your address. Made-to-order pieces ship within 5–7 working days.</small>
     <div style="display:grid;grid-template-columns:1fr 1fr;gap:8px"><a class="btn" href="cart.html" style="justify-content:center">View bag</a><a class="btn dark" href="checkout.html" style="justify-content:center">Checkout</a></div>
   </footer>
 </aside>
@@ -173,7 +173,18 @@ const footer=`<section class="join" id="join"><div class="wrap join-grid">
 
 /* ---------- bag ---------- */
 let cart=store.get("coa-bag",[]).filter(c=>BY[c.id]);
-const FREE=2500; // example threshold, to confirm with Oscar
+/* Store policy, confirmed by Chiefs of Angels (21 Oct 2026) */
+const POLICY={
+  courier:"The Courier Guy",
+  returnDays:14,
+  pay:["PayFast","PayFlex"],
+  collect:"Melrose flagship store"
+};
+/* sale items, discounted merchandise and headgear can't be returned or exchanged */
+const returnable=p=>!p.was&&!p.sale&&p.type!=="headgear";
+/* PayFlex: 4 interest-free instalments over 6 weeks */
+const Rc=n=>{const v=Math.round(n*100)/100; return Number.isInteger(v)?R(v):"R"+v.toLocaleString("en-ZA",{minimumFractionDigits:2,maximumFractionDigits:2}).replace(/[\s\u00a0\u202f]/g,",")};
+const payflex=total=>`or 4 interest-free payments of <b>${Rc(total/4)}</b> with PayFlex`;
 const bagTotals=()=>({count:cart.reduce((a,c)=>a+c.q,0),sub:cart.reduce((a,c)=>a+c.q*BY[c.id].p,0)});
 const listeners=[];
 function saveCart(){ store.set("coa-bag",cart); render(); listeners.forEach(f=>f()) }
@@ -182,8 +193,7 @@ function render(){
   const b=$("#bagCount"); if(!b) return;
   b.textContent=count; b.classList.toggle("on",count>0);
   $("#subtotal").textContent=R(sub);
-  $("#shipBar").style.width=Math.min(100,sub/FREE*100)+"%";
-  $("#shipMsg").textContent=!count?"Add a few pieces to see delivery options.":sub>=FREE?"Free delivery unlocked (example threshold, to confirm with Oscar).":`${R(FREE-sub)} away from free delivery (example threshold).`;
+  $("#shipMsg").innerHTML=!count?"Add a few pieces to see delivery options.":payflex(sub);
   $("#items").innerHTML=!cart.length?`<div class="empty"><span class="story">Your bag is empty.</span><a href="${curl("new-in")}" style="text-decoration:underline;text-underline-offset:3px">Start with something new in.</a></div>`:
     cart.map((c,i)=>{const p=BY[c.id];return `<div class="item"><a href="${purl(p.id)}"><img src="${img(p.imgs[0])}" alt=""></a><div><h4><a href="${purl(p.id)}">${esc(p.n)}</a></h4><small>Size ${c.s}${p.mto?" · made to order":""}</small><div class="qty"><button data-q="-1" data-i="${i}" aria-label="Decrease quantity">−</button><span>${c.q}</span><button data-q="1" data-i="${i}" aria-label="Increase quantity">+</button></div><button class="rm" data-rm="${i}">Remove</button></div><span class="price">${R(p.p*c.q)}</span></div>`}).join("");
 }
@@ -283,5 +293,5 @@ const fmt=d=>new Date(d).toLocaleDateString("en-ZA",{weekday:"short",day:"numeri
 const crumbs=(list)=>`<nav class="crumbs" aria-label="Breadcrumb"><a href="index.html">Home</a>${list.map((x,i)=>`<span aria-hidden="true">/</span>${i===list.length-1?`<span aria-current="page">${esc(x[0])}</span>`:`<a href="${x[1]}">${esc(x[0])}</a>`}`).join("")}</nav>`;
 
 window.COA={P,BY,C,SWITCH,TYPES,SIZES,DIARIES,PAGES,R,$,esc,img,priceHTML,card,add,openBag,closeAll,mount,store,wish,toggleWish,purl,curl,addWorkingDays,fmt,ar,crumbs,hashFor,toast,
-  get cart(){return cart}, setCart(c){cart=c;saveCart()}, saveCart, bagTotals, onChange(f){listeners.push(f)}, FREE};
+  get cart(){return cart}, setCart(c){cart=c;saveCart()}, saveCart, bagTotals, onChange(f){listeners.push(f)}, POLICY, returnable, payflex, Rc};
 })();

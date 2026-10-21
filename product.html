@@ -57,7 +57,7 @@
 <script src="coa.js"></script>
 <script>
 (function(){
-const {P,BY,C,TYPES,R,$,esc,img,priceHTML,card,add,openBag,closeAll,mount,store,wish,curl,addWorkingDays,fmt,ar,crumbs,hashFor,DIARIES}=COA;
+const {P,BY,C,TYPES,R,$,esc,img,priceHTML,card,add,openBag,closeAll,mount,store,wish,curl,addWorkingDays,fmt,ar,crumbs,hashFor,DIARIES,returnable,payflex}=COA;
 mount("shop");
 
 let id=hashFor("product.html");
@@ -97,7 +97,7 @@ $("#info").innerHTML=`
     <h1 class="display">${esc(p.n)}</h1>
   </div>
   <p class="story">${esc(p.l)}</p>
-  <div class="p-price">${priceHTML(p)}<small>${p.was?`Save ${R(p.was-p.p)} · `:""}VAT included</small></div>
+  <div><div class="p-price">${priceHTML(p)}<small>${p.was?`Save ${R(p.was-p.p)} · `:""}VAT included</small></div><p class="payflex-line">${payflex(p.p)}</p></div>
   <div>
     <div class="opt-head"><span>Size: <b id="sizeLbl">${p.one?"One size":"choose one"}</b></span>${p.one?"":`<button id="fitBtn">Size &amp; fit</button>`}</div>
     ${p.one?"":`<div class="p-sizes" id="psizes" role="group" aria-label="Choose a size" style="grid-template-columns:repeat(${p.sizes.length},minmax(0,1fr))">${p.sizes.map(s=>`<button data-s="${s}" aria-pressed="false">${s}</button>`).join("")}</div>`}
@@ -107,6 +107,7 @@ $("#info").innerHTML=`
     <button class="btn dark" id="addBtn" aria-disabled="${!size}">${size?`Add to bag · ${R(p.p)}`:"Select a size"} ${ar}</button>
     <button class="wish${wish.has(p.id)?" on":""}" data-wid="${p.id}" aria-label="Save ${esc(p.n)}" aria-pressed="${wish.has(p.id)}"><svg><use href="#i-heart"/></svg></button>
   </div>
+  ${returnable(p)?"":`<p class="final-sale">Final sale: ${p.type==="headgear"?"headgear":"sale items"} can’t be returned or exchanged.</p>`}
   <div class="dispatch">
     <svg><use href="#i-needle"/></svg>
     ${p.mto?`<div><b>Made for you, dispatched ${fmt(d5)} – ${fmt(d7)}</b><span>Cut and finished by hand once you order: 5–7 working days, counted from today, skipping weekends and public holidays.</span></div>`
@@ -115,7 +116,7 @@ $("#info").innerHTML=`
   <div class="acc">
     <details open><summary>Details</summary><div class="in">${p.det.length?`<ul>${p.det.map(x=>`<li>${esc(x)}</li>`).join("")}</ul>`:`<p>${esc(p.l)}</p>`}</div></details>
     <details><summary>The story</summary><div class="in"><p>${esc(p.d||p.l)}</p>${p.cols.filter(c=>c!=="sale").map(c=>`<p>Part of <a href="${curl(c)}" style="text-decoration:underline;text-underline-offset:3px">${C[c].t}</a>. ${esc(C[c].d)}</p>`).join("")}</div></details>
-    <details id="delivery"><summary>Delivery &amp; returns</summary><div class="in"><p>${p.mto?"This piece is made to order and dispatched within 5–7 working days.":"Dispatch time is confirmed at checkout."} Delivery options and costs are shown at checkout.</p><p><a href="faq.html#delivery" style="text-decoration:underline;text-underline-offset:3px">Read the delivery and returns FAQ</a></p></div></details>
+    <details id="delivery"><summary>Delivery &amp; returns</summary><div class="in"><p>${p.mto?"This piece is made to order and dispatched within 5–7 working days.":"Dispatch time is confirmed at checkout."} We ship with The Courier Guy (standard shipping); the fee is worked out at checkout from your address. You can also collect from our Melrose flagship store, with a shipping fee still applied.</p><p>${returnable(p)?"Exchanges and returns are accepted within 14 calendar days of purchase with your digital receipt, as long as the piece is unused and undamaged.":`<b>This piece can’t be returned or exchanged.</b> ${p.type==="headgear"?"Headgear":"Sale and discounted items"} are excluded from our exchange policy.`}</p><p><a href="faq.html#delivery" style="text-decoration:underline;text-underline-offset:3px">Read the delivery and exchange FAQ</a></p></div></details>
   </div>
   <div class="share"><button id="copyLink">Copy link</button><a href="contact.html" style="text-decoration:underline;text-underline-offset:3px">Ask about this piece</a><span id="copied" aria-live="polite"></span></div>
 `;
