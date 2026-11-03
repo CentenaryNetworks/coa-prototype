@@ -1,0 +1,67 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="robots" content="noindex, nofollow">
+<title>Chiefs of Angels</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Instrument+Serif:ital@0;1&display=swap">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Archivo:wght@400;500;600&display=swap">
+<link rel="stylesheet" href="coa.css">
+<style>body{margin:0}</style>
+</head>
+<body>
+<main id="top">
+
+<section class="v5-hero" aria-label="Skool of Rock">
+  <figure><img src="img/sor-look-2.jpg" alt="Model in a black Chiefs of Angels Universite sweater and grey sweatpants against a painted wall" style="object-position:center 30%"></figure>
+  <figure><img src="img/sor-look-4.jpg" alt="Model in a white Universite tee and a black leather skirt" style="object-position:center 30%"></figure>
+  <div class="over-t">
+    <h1>Skool of Rock</h1>
+    <a href="collection.html#skool-of-rock">Shop the collection</a>
+  </div>
+</section>
+
+<div class="v5-label"><h2>New in</h2><a href="collection.html#new-in">View all</a></div>
+<div class="p-row" id="newin"></div>
+
+<a class="v5-band" href="collection.html#jackets">
+  <img src="img/home-slide-3.jpg" alt="Model in a black leather jacket against a white door" loading="lazy" style="object-position:center 35%">
+  <div class="over-t"><span>Outerwear<em>The final layer.</em></span><span class="go">Shop jackets</span></div>
+</a>
+<div class="p-row" id="layer" style="margin-top:1px"></div>
+
+<section class="v5-statement">
+  <p>Spiritual, rebellious and timeless.</p>
+  <small>Rock ’n’ roll · Spirituality · Sustainability</small>
+</section>
+
+<div class="v5-pair">
+  <a href="collection.html#heart-supplies"><img src="img/cat-newin.jpg" alt="Model in a black sweater with a red heart patch against a brick wall" loading="lazy" style="object-position:62% center"><span>Heart Supplies</span></a>
+  <a href="collection.html#logo-threads"><img src="img/cat-logothreads.jpg" alt="Model in a COA beanie and black logo hoodie against a black backdrop" loading="lazy" style="object-position:center 25%"><span>Logo Threads</span></a>
+</div>
+
+<div class="v5-label"><h2>Diaries</h2><a href="diaries.html">All entries</a></div>
+<div class="v5-journal">
+  <a href="diary.html#story-beneath-the-sound"><figure><img src="img/diary-01.jpg" alt="" loading="lazy"></figure><p>The story beneath the sound</p><small>Vol. 1 · Roots</small></a>
+  <a href="diary.html#skool-of-rock"><figure><img src="img/sor-look-1.jpg" alt="" loading="lazy" style="filter:none"></figure><p>Youth is an experiment</p><small>Skool of Rock lookbook</small></a>
+  <a href="diary.html#story-beneath-the-sound"><figure><img src="img/diary-07.jpg" alt="" loading="lazy"></figure><p>Rock ’n’ roll isn’t just a genre</p><small>Vol. 1 · Chapter four</small></a>
+  <a href="diary.html#story-beneath-the-sound"><figure><img src="img/diary-02.jpg" alt="" loading="lazy"></figure><p>Before there was rock, there was gospel</p><small>Vol. 1 · Chapter two</small></a>
+</div>
+<div style="height:96px"></div>
+
+</main>
+<script src="coa-data.js"></script>
+<script src="coa.js"></script>
+<script>
+(function(){
+const {card,mount,$}=COA;
+mount("home",{over:true});
+$("#newin").innerHTML=["black-angel-skirt","flatground-bomber-jacket","open-heavens-tank","electric-lamb-leather-bomber"].map(id=>card(id)).join("");
+$("#layer").innerHTML=["aretha-leather-jacket","core-joplin-jacket","studded-raven","the-nomad-jacket"].map(id=>card(id)).join("");
+})();
+</script>
+</body>
+</html>

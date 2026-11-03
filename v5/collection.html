@@ -1,0 +1,104 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="robots" content="noindex, nofollow">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Collection · Chiefs of Angels</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Instrument+Serif:ital@0;1&display=swap">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Archivo:wght@400;500;600;700&display=swap">
+<link rel="stylesheet" href="coa.css">
+<style>
+:root{padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}
+body{margin:0}
+</style>
+</head>
+<body>
+<main id="top">
+  <div id="chero"></div>
+  <div class="c5-head">
+    <div><h1 id="ctitle"></h1><p id="cdesc"></p></div>
+    <div class="c5-tools">
+      <div class="chips" id="chips" aria-label="Filter by type"></div>
+      <label class="cap" for="sort" style="color:var(--smoke);margin-left:6px">Sort</label>
+      <select class="sort" id="sort">
+        <option value="new">Newest</option>
+        <option value="lo">Price, low to high</option>
+        <option value="hi">Price, high to low</option>
+        <option value="az">Name, A–Z</option>
+      </select>
+    </div>
+  </div>
+  <div class="c5-grid" id="grid"></div>
+  <div class="c5-more" id="more"></div>
+  <span id="count" class="sr" aria-live="polite"></span>
+</main>
+
+<script src="coa-data.js"></script>
+<script src="coa.js"></script>
+<script>
+(function(){
+const {P,C,SWITCH,TYPES,R,$,esc,card,mount,store,curl,ar,img}=COA;
+mount("shop");
+
+const PAGE=16;
+let slug="new-in", type="all", sort="new", shown=PAGE;
+let cols=store.get("coa-cols",4);
+
+function readSlug(){
+  const h=COA.hashFor("collection.html");
+  return C[h]?h:"shop";
+}
+
+function hero(){
+  const c=C[slug], items=P.filter(c.f);
+  document.title=`${c.t} · Chiefs of Angels`;
+  /* a campaign image only for collections that have one; categories open straight on the clothes */
+  const band=c.k==="Collection"&&c.img;
+  $("#chero").innerHTML=band?`<div class="c5-band"><img src="${img(c.img)}" alt="" style="object-position:${c.pos||"center"}"><h1 aria-hidden="true">${esc(c.t)}</h1></div>`:"";
+  $("#ctitle").innerHTML=`${esc(c.t)}<small>${items.length}</small>`;
+  /* one sentence at most */
+  $("#cdesc").textContent=c.k==="Collection"?(c.d.split(/(?<=\.)\s/)[0]):"";
+  $("#cdesc").hidden=c.k!=="Collection";
+}
+
+function chips(){
+  const items=P.filter(C[slug].f);
+  const counts={}; items.forEach(p=>counts[p.type]=(counts[p.type]||0)+1);
+  const keys=Object.keys(TYPES).filter(k=>counts[k]);
+  if(type!=="all" && !counts[type]) type="all";
+  $("#chips").innerHTML=keys.length>1?`<button class="chip" data-t="all" aria-pressed="${type==="all"}">All</button>`+keys.map(k=>`<button class="chip" data-t="${k}" aria-pressed="${type===k}">${TYPES[k]}</button>`).join(""):"";
+}
+
+function list(){
+  let items=P.filter(C[slug].f).filter(p=>type==="all"||p.type===type);
+  const by={new:(a,b)=>a.o-b.o,lo:(a,b)=>a.p-b.p||a.o-b.o,hi:(a,b)=>b.p-a.p||a.o-b.o,az:(a,b)=>a.n.localeCompare(b.n)}[sort];
+  return items.sort(by);
+}
+
+function grid(){
+  const items=list(), g=$("#grid");
+  if(!items.length){ g.innerHTML=`<div class="c5-empty">Nothing here in that style yet. <button class="link-arrow" id="reset">Show all</button></div>`; $("#more").innerHTML=""; $("#count").textContent="0 pieces"; $("#reset").onclick=()=>{type="all";chips();grid()}; return }
+  g.innerHTML=items.slice(0,shown).map(p=>card(p.id,{eager:true})).join("");
+  const n=Math.min(shown,items.length);
+  $("#count").textContent=`${items.length} piece${items.length===1?"":"s"}`;
+  $("#more").innerHTML=items.length>shown?`<p>${n} of ${items.length}</p><button class="btn" id="moreBtn">Show more</button>`:"";
+  const mb=$("#moreBtn"); if(mb) mb.onclick=()=>{ shown+=PAGE; grid() };
+}
+
+function load(){
+  slug=readSlug(); type="all"; shown=PAGE;
+  
+  hero(); chips(); grid();
+}
+
+$("#chips").addEventListener("click",e=>{ const b=e.target.closest(".chip"); if(!b) return; type=b.dataset.t; shown=PAGE; chips(); grid() });
+$("#sort").addEventListener("change",e=>{ sort=e.target.value; grid() });
+addEventListener("hashchange",()=>{ load(); scrollTo({top:0,behavior:"smooth"}) });
+load();
+})();
+</script>
+</body>
+</html>

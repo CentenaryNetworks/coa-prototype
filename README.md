@@ -2,7 +2,24 @@
 
 A clickable prototype of the new chiefsofangels.com storefront, for the team and client to review before the custom WordPress theme is built.
 
-**Live preview:** https://centenarynetworks.github.io/coa-prototype/
+**Live preview (version 4):** https://centenarynetworks.github.io/coa-prototype/
+**Version 5 preview:** https://centenarynetworks.github.io/coa-prototype/v5/
+
+## Versions
+
+- **v4** (tag `v4`): the prototype as approved for content, with confirmed shipping, PayFast/PayFlex and the exchange policy.
+- **v5** (branch `v5`, preview in `/v5/`): a restyle following Chiefs of Angels' *Website Direction* brief (Nov 2026): editorial restraint, imagery first, selective copy, generous space, minimal motion. Same pages, products, shopping flow and store policies as v4.
+
+If v5 is approved it replaces v4 at the main link. If not, v4 stays exactly as it is.
+
+### What changed in v5
+
+- **Homepage:** a full-screen Skool of Rock campaign image, then four new pieces, a full-width outerwear image with four jackets, one brand line (the three pillars), two collection images and a Diaries row. Removed: the rotating hero, scrolling ticker, timetable, category mosaic and "how it works" steps.
+- **Header and footer:** words instead of icons, no announcement bar. The header sits transparent over the homepage image. Quieter footer with a one-line newsletter.
+- **Product cards:** picture, name and price only. No badges, descriptions or quick-add overlay.
+- **Collection pages:** a campaign image only for collections that have one, a one-line description, text filters, and an edge-to-edge grid.
+- **Product page:** large stacked images, with the details in a quiet column beside them (name, price, PayFlex, size, add to bag, one dispatch line) and Details / Delivery & returns / Help folded away.
+- **Type:** one small uppercase sans for the interface, a serif for the rare editorial line. The bold condensed display face is gone. Red is kept for the heart and for warnings only.
 
 Prepared by MPL AI (NewMPL Ventures) for Centenary Networks. Product names, prices, photos and page text come from the live store, exported on 14 October 2026.
 

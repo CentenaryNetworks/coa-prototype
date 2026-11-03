@@ -1,0 +1,122 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="robots" content="noindex, nofollow">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Product · Chiefs of Angels</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Instrument+Serif:ital@0;1&display=swap">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Archivo:wght@400;500;600;700&display=swap">
+<link rel="stylesheet" href="coa.css">
+<style>:root{padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)} body{margin:0}</style>
+</head>
+<body>
+<main id="top">
+  <div class="pd5">
+    <div class="pd5-imgs" id="imgs" aria-label="Product images"></div>
+    <div class="pd5-info" id="info"></div>
+  </div>
+  <section id="storySec" hidden></section>
+  <div class="v5-label"><h2 id="lookH">You may also like</h2><a id="lookLink" href="collection.html#shop">View all</a></div>
+  <div class="p-row" id="look"></div>
+  <div style="height:80px"></div>
+</main>
+
+<aside class="sheet" id="fitSheet" aria-label="Size and fit" aria-hidden="true">
+  <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:6px"><h2>Size &amp; fit</h2><button class="txt-btn" data-close aria-label="Close size and fit">Close</button></div>
+  <div id="fitBody"></div>
+</aside>
+
+<script src="coa-data.js"></script>
+<script src="coa.js"></script>
+<script>
+(function(){
+const {P,BY,C,TYPES,R,$,esc,img,priceHTML,card,add,openBag,closeAll,mount,store,wish,curl,addWorkingDays,fmt,ar,crumbs,hashFor,DIARIES,returnable,payflex}=COA;
+mount("shop");
+
+let id=hashFor("product.html");
+if(!BY[id]) id="flatground-bomber-jacket";
+const p=BY[id];
+let size=p.one?"One size":null, view=0;
+document.title=`${p.n} · Chiefs of Angels`;
+
+const homeCol=p.cols.find(c=>c!=="sale") || (p.type==="jackets"?"jackets":p.type==="headgear"?"accessories":p.type==="sweaters"?"outerwear":"loungewear");
+const col=C[homeCol];
+
+/* images: every photo, stacked, full height; click to look closer */
+$("#imgs").innerHTML=p.imgs.map((im,i)=>`<figure><img src="${img(im)}" alt="${esc(p.n)}${i?`, view ${i+1}`:""}"></figure>`).join("");
+$("#imgs").addEventListener("click",e=>{ const f=e.target.closest("figure"); if(!f) return; f.classList.toggle("zoom"); zoomAt(e,f) });
+$("#imgs").addEventListener("mousemove",e=>{ const f=e.target.closest("figure.zoom"); if(f) zoomAt(e,f) });
+function zoomAt(e,f){ const r=f.getBoundingClientRect(); f.querySelector("img").style.transformOrigin=`${(e.clientX-r.left)/r.width*100}% ${(e.clientY-r.top)/r.height*100}%` }
+
+const d5=addWorkingDays(new Date(),5), d7=addWorkingDays(new Date(),7);
+const fitWord=p.det.find(x=>/fit|cropped|sleeveless|barrel|boxy/i.test(x));
+
+$("#info").innerHTML=`
+  <div>
+    <h1>${esc(p.n)}</h1>
+    ${priceHTML(p)}
+    <p class="payflex-line">${payflex(p.p)}</p>
+  </div>
+  <p class="lede">${esc(p.l)}</p>
+  ${p.one?`<div class="pd5-row"><span>One size</span></div>`:`<div>
+    <div class="pd5-row" style="margin-bottom:10px"><span id="sizeLbl">Size</span><button id="fitBtn">Size guide</button></div>
+    <div class="pd5-sizes" id="psizes" role="group" aria-label="Choose a size">${p.sizes.map(s=>`<button data-s="${s}" aria-pressed="false">${s}</button>`).join("")}</div>
+  </div>`}
+  <button class="btn dark" id="addBtn" aria-disabled="${!size}">${size?"Add to bag":"Select a size"}</button>
+  <p class="pd5-note">${p.mto?`Made to order. Dispatched ${fmt(d5)} – ${fmt(d7)}.`:"Dispatch time confirmed at checkout."}</p>
+  ${returnable(p)?"":`<p class="final-sale">Final sale: ${p.type==="headgear"?"headgear":"sale items"} can’t be returned or exchanged.</p>`}
+  <div class="pd5-acc">
+    <details><summary>Details</summary><div class="in">${p.det.length?`<ul>${p.det.map(x=>`<li>${esc(x)}</li>`).join("")}</ul>`:`<p>${esc(p.l)}</p>`}${p.d&&p.d!==p.l?`<p style="margin-top:12px">${esc(p.d)}</p>`:""}</div></details>
+    <details id="delivery"><summary>Delivery &amp; returns</summary><div class="in"><p>${p.mto?"Made to order and dispatched within 5–7 working days.":"Dispatch time is confirmed at checkout."} Shipped with The Courier Guy; the fee is worked out at checkout. Collection from our Melrose flagship store is available, with a shipping fee.</p><p>${returnable(p)?"Exchanges and returns within 14 calendar days of purchase, with your digital receipt, if unused and undamaged.":`This piece can’t be returned or exchanged. ${p.type==="headgear"?"Headgear":"Sale and discounted items"} are excluded from our exchange policy.`}</p><p><a href="faq.html#delivery">Delivery and exchange FAQ</a></p></div></details>
+    <details><summary>Help</summary><div class="in"><p><a href="contact.html">Ask the studio about this piece</a></p></div></details>
+  </div>
+  <button class="pd5-wish wish${wish.has(p.id)?" on":""}" data-wid="${p.id}" aria-pressed="${wish.has(p.id)}">${wish.has(p.id)?"Saved to wishlist":"Add to wishlist"}</button>
+`;
+COA.onChange(()=>{ const w=document.querySelector(".pd5-wish"); if(w) w.textContent=wish.has(p.id)?"Saved to wishlist":"Add to wishlist" });
+
+function setSize(s){
+  size=s; $("#sizeLbl").textContent="Size "+s; $("#sizeLbl").classList.remove("err");
+  document.querySelectorAll("#psizes button").forEach(b=>b.setAttribute("aria-pressed",b.dataset.s===s));
+  const a=$("#addBtn"); a.setAttribute("aria-disabled","false"); a.textContent="Add to bag";
+}
+function tryAdd(){
+  if(!size){ const g=$("#psizes"); g.classList.add("shake"); $("#sizeLbl").textContent="Select a size"; $("#sizeLbl").classList.add("err"); return }
+  add(p.id,size); setTimeout(openBag,300);
+}
+const ps=$("#psizes"); if(ps) ps.addEventListener("click",e=>{ const b=e.target.closest("button"); if(b) setSize(b.dataset.s) });
+$("#addBtn").onclick=tryAdd;
+
+const fb=$("#fitBtn");
+if(fb) fb.onclick=()=>{
+  $("#fitBody").innerHTML=`<p style="margin:14px 0 0">${fitWord?`${esc(fitWord)}.`:"Cut to the Chiefs of Angels standard block."}</p>
+  <ul class="fitlist">${p.sizes.map(s=>`<li><span>${s}</span><span style="color:var(--smoke)">${{XS:"Extra small",S:"Small",M:"Medium",L:"Large",XL:"Extra large"}[s]||s}</span></li>`).join("")}</ul>
+  <p class="note">The measurement chart is being produced by Chiefs of Angels and will appear here.</p>
+  <p style="margin-top:16px">Between sizes? <a href="contact.html" style="text-decoration:underline;text-underline-offset:3px">Ask the studio</a>.</p>`;
+  $("#fitSheet").classList.add("on"); $("#scrim").classList.add("on"); $("#fitSheet").setAttribute("aria-hidden","false");
+};
+$("#fitSheet").addEventListener("click",e=>{ if(e.target.closest("[data-close]")) closeAll() });
+
+/* one quiet link to the story behind the piece, where there is one */
+const storyCol=p.cols.find(c=>C[c]&&C[c].story);
+const d=DIARIES.find(x=>x.prods&&x.prods.includes(p.id)) || (storyCol && DIARIES.find(x=>x.id===C[storyCol].story));
+if(d){
+  const s=$("#storySec"); s.hidden=false;
+  s.innerHTML=`<div class="pd5-story"><img src="${img(d.cover)}" alt="" loading="lazy"><div><span>Diaries</span><p>${esc(d.t)}</p><a href="diary.html#${d.id}">Read</a></div></div>`;
+}
+
+/* you may also like: same collection first, then a different type to wear it with */
+const pool=P.filter(x=>x.id!==p.id);
+const scored=pool.map(x=>({x,s:(p.cols.filter(c=>c!=="sale").some(c=>x.cols.includes(c))?3:0)+(x.type!==p.type?1:0)+(x.type===p.type?.4:0)+(x.isNew?.2:0)}))
+  .sort((a,b)=>b.s-a.s||a.x.o-b.x.o).slice(0,4).map(o=>o.x.id);
+$("#look").innerHTML=scored.map(i=>card(i)).join("");
+$("#lookLink").href=curl(homeCol); $("#lookLink").textContent=`View ${col.t}`;
+let rec=store.get("coa-recent",[]).filter(x=>x!==p.id&&BY[x]);
+store.set("coa-recent",[p.id,...rec].slice(0,8));
+addEventListener("hashchange",()=>location.reload());
+})();
+</script>
+</body>
+</html>
