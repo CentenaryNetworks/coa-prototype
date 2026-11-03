@@ -1189,3 +1189,14 @@ body.over .hdr.scrolled,body.over .hdr:hover,body.over .hdr:focus-within{backgro
 .c5-tools .chips::-webkit-scrollbar{display:none}
 .c5-tools .chip{flex:none}
 @media (max-width:640px){ .c5-tools{width:100%} .c5-tools .chips{width:100%} }
+/* mega menu: the panel must grow to fit its links (it was inheriting the 54px header row) */
+.hdr .mega .wrap{height:auto;display:grid;grid-template-columns:200px 200px minmax(0,320px);align-items:start;gap:40px;padding-block:28px 34px}
+.hdr .mega{color:var(--ink);background:#fff}
+/* hero: two campaigns side by side, each its own link */
+.v5-hero .half{position:relative;display:block;overflow:hidden;height:100%}
+.v5-hero .half img{width:100%;height:100%;object-fit:cover}
+.v5-hero .half::after{content:"";position:absolute;inset:auto 0 0 0;height:30%;background:linear-gradient(transparent,rgba(0,0,0,.35));pointer-events:none}
+.v5-hero::after{display:none}
+.v5-hero .lbl{position:absolute;left:var(--gutter);bottom:64px;z-index:1;font:var(--ui);letter-spacing:.12em;text-transform:uppercase;border-bottom:1px solid transparent;padding-bottom:2px}
+.v5-hero .half:hover .lbl{border-bottom-color:#fff}
+@media (max-width:640px){ .v5-hero{grid-template-columns:1fr;grid-template-rows:1fr 1fr} .v5-hero .lbl{bottom:22px} .v5-hero .half+.half .lbl{bottom:64px} }
