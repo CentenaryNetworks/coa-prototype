@@ -55,9 +55,9 @@ const esc=s=>String(s??"").replace(/[&<>"]/g,c=>({"&":"&amp;","<":"&lt;",">":"&g
 const store={get(k,d){try{const v=localStorage.getItem(k);return v?JSON.parse(v):d}catch(e){return d}},set(k,v){try{localStorage.setItem(k,JSON.stringify(v))}catch(e){}}};
 const purl=id=>"product.html#"+id, curl=s=>"collection.html#"+s;
 const img=(n)=>`img/${n}.jpg`;
-const priceHTML=p=>p.was?`<span class="price"><s style="color:var(--smoke);font-weight:400;margin-right:6px">${R(p.was)}</s><span style="color:var(--heart)">${R(p.p)}</span></span>`:`<span class="price">${R(p.p)}</span>`;
+const priceHTML=p=>p.was?`<span class="price"><s>${R(p.was)}</s> <span class="now">${R(p.p)}</span></span>`:`<span class="price">${R(p.p)}</span>`;
 
-/* ---------- product card ---------- */
+/* ---------- product card (v5: image, name, price, nothing else) ---------- */
 const wish=new Set(store.get("coa-wish",[]).filter(id=>BY[id]));
 function card(id,opt={}){
   const p=BY[id]; if(!p) return "";
@@ -65,12 +65,10 @@ function card(id,opt={}){
   return `<article class="card" data-id="${p.id}">
     <div class="ph">
       <a class="ph-link" href="${purl(p.id)}" aria-label="${esc(p.n)}"></a>
-      ${p.tag?`<span class="tag${p.sale?" sale":""}">${p.tag}</span>`:""}
-      <button class="wish${wish.has(p.id)?" on":""}" aria-label="Save ${esc(p.n)}" aria-pressed="${wish.has(p.id)}"><svg><use href="#i-heart"/></svg></button>
       <img class="${p.imgs[1]?"has-alt":""}" src="${img(p.imgs[0])}" alt="${esc(p.n)}" loading="${opt.eager?"eager":"lazy"}">${alt}
-      <div class="quick"><p>Quick add · ${p.one?"one size":"choose size"}</p><div class="sizes" style="grid-template-columns:repeat(${p.sizes.length},1fr)">${p.sizes.map(s=>`<button data-size="${s}" aria-label="Add ${esc(p.n)} size ${s}">${s}</button>`).join("")}</div></div>
+      <button class="wish${wish.has(p.id)?" on":""}" aria-label="Save ${esc(p.n)}" aria-pressed="${wish.has(p.id)}"><svg><use href="#i-heart"/></svg></button>
     </div>
-    <div class="meta"><div><h3><a href="${purl(p.id)}">${esc(p.n)}</a></h3><p class="line">${esc(p.l)}</p></div>${priceHTML(p)}</div>
+    <div class="meta"><h3><a href="${purl(p.id)}">${esc(p.n)}</a></h3>${priceHTML(p)}</div>
   </article>`;
 }
 
@@ -98,51 +96,42 @@ const social=(cls="")=>`<div class="social ${cls}"><a href="https://www.instagra
 const ar=`<svg width="14" height="14" style="stroke:currentColor;fill:none;stroke-width:1.8;flex:none"><use href="#i-arrow"/></svg>`;
 function header(active){
   const a=k=>active===k?' class="on" aria-current="page"':"";
-  const cnt=c=>P.filter(C[c].f).length;
   return `<a class="skip" href="#top">Skip to content</a>
-<div class="announce" role="note"><div class="wrap"><span><b>Made to order</b> <span class="dot">●</span> <span class="hide-s">most pieces are cut and finished for you in </span>5–7 working days</span><span class="hide-s"><a href="${curl("sale")}" style="text-decoration:underline;text-underline-offset:3px">Winter Sale ’26: Logo Threads 30% off</a></span></div></div>
 <header class="hdr" id="hdr"><div class="wrap">
   <ul class="nav" aria-label="Shop">
-    <li><a href="${curl("new-in")}"${a("new-in")}>New In</a></li>
     <li><button aria-haspopup="true"${active==="shop"?' class="on"':""}>Shop</button>
       <div class="mega"><div class="wrap">
-        <div><h4>Clothing</h4><ul><li><a href="${curl("shop")}">Shop all · ${P.length}</a></li><li><a href="${curl("jackets")}">Jackets · ${cnt("jackets")}</a></li><li><a href="${curl("outerwear")}">Outerwear</a></li><li><a href="${curl("loungewear")}">Loungewear</a></li></ul></div>
-        <div><h4>Accessories</h4><ul><li><a href="${curl("accessories")}">Caps · ${cnt("accessories")}</a></li></ul><h4 style="margin-top:28px">Offers</h4><ul><li><a href="${curl("sale")}">Winter Sale ’26</a></li></ul></div>
-        <div><h4>Collections</h4><ul><li><a href="${curl("skool-of-rock")}">Skool of Rock</a></li><li><a href="${curl("new-jozi")}">New Jozi</a></li><li><a href="${curl("heart-supplies")}">Heart Supplies</a></li><li><a href="${curl("denim-edit")}">Denim Edit</a></li><li><a href="${curl("logo-threads")}">Logo Threads</a></li></ul></div>
-        <figure><img src="img/cat-jackets.jpg" alt="Model in a black leather jacket" loading="lazy"><figcaption>Jackets · the final layer</figcaption></figure>
+        <ul><li><a href="${curl("new-in")}">New in</a></li><li><a href="${curl("shop")}">All</a></li><li><a href="${curl("jackets")}">Jackets</a></li><li><a href="${curl("outerwear")}">Outerwear</a></li><li><a href="${curl("loungewear")}">Loungewear</a></li><li><a href="${curl("accessories")}">Headgear</a></li><li><a href="${curl("sale")}">Sale</a></li></ul>
+        <ul><li><a href="${curl("skool-of-rock")}">Skool of Rock</a></li><li><a href="${curl("new-jozi")}">New Jozi</a></li><li><a href="${curl("heart-supplies")}">Heart Supplies</a></li><li><a href="${curl("denim-edit")}">Denim Edit</a></li><li><a href="${curl("logo-threads")}">Logo Threads</a></li></ul>
+        <figure><img src="img/home-slide-3.jpg" alt="" loading="lazy"><figcaption>The final layer</figcaption></figure>
       </div></div></li>
-    <li><a href="diaries.html"${a("diaries")}>COA Diaries</a></li>
+    <li><a href="diaries.html"${a("diaries")}>Diaries</a></li>
     <li><a href="about.html"${a("about")}>About</a></li>
   </ul>
-  <button class="icon-btn burger" id="burger" aria-label="Open menu"><svg><use href="#i-menu"/></svg></button>
+  <button class="burger" id="burger" aria-label="Open menu">Menu</button>
   <a class="logo" href="index.html" aria-label="Chiefs of Angels home"><img src="img/logo.png" alt="Chiefs of Angels"></a>
   <div class="tools">
-    <button class="icon-btn" id="searchBtn" aria-label="Search"><svg><use href="#i-search"/></svg></button>
-    <a class="icon-btn hide-s" href="wishlist.html" aria-label="Wishlist"><svg><use href="#i-heart"/></svg></a>
-    <a class="icon-btn" href="account.html" aria-label="My account"><svg><use href="#i-user"/></svg></a>
-    <button class="icon-btn bag" id="bagBtn" aria-label="Open bag"><svg><use href="#i-bag"/></svg><span class="count" id="bagCount">0</span></button>
+    <button id="searchBtn" aria-label="Search">Search</button>
+    <a class="hide-s" href="account.html">Account</a>
+    <button class="bag" id="bagBtn" aria-label="Open bag">Bag <span id="bagCount">0</span></button>
   </div>
 </div></header>`;
 }
-const footer=`<section class="join" id="join"><div class="wrap join-grid">
-  <div><h2 class="display">Join the <em>chiefs</em></h2><p>First access to new drops, the next Diaries entry, and collection launches. One email when it matters.</p></div>
-  <form id="joinForm" novalidate><label class="sr" for="email">Email address</label><div class="field"><input id="email" type="email" placeholder="Your email address" autocomplete="email"><button type="submit">Sign up</button></div><div class="form-note" id="joinNote" aria-live="polite"></div></form>
-</div></section>
-<footer><div class="wrap">
+const footer=`<footer class="foot"><div class="wrap">
   <div class="foot-grid">
-    <div><img class="foot-logo" src="img/logo.png" alt="Chiefs of Angels"><p style="max-width:34ch;margin-top:18px">Spiritual, rebellious and timeless. Up-cycled, recycled, repurposed and newly made clothing with a rock ’n’ roll sensibility.</p><p style="margin-top:14px">16 Victoria Yards, Viljoen Street, Lorentzville, Johannesburg</p>${social("foot-social")}</div>
-    <div><h4>Shop</h4><ul><li><a href="${curl("new-in")}">New In</a></li><li><a href="${curl("shop")}">Shop all</a></li><li><a href="${curl("jackets")}">Jackets</a></li><li><a href="${curl("accessories")}">Accessories</a></li><li><a href="${curl("sale")}">Sale</a></li></ul></div>
-    <div><h4>Help</h4><ul><li><a href="faq.html">FAQ</a></li><li><a href="faq.html#delivery">Delivery &amp; exchanges</a></li><li><a href="contact.html">Contact us</a></li><li><a href="account.html">My account</a></li><li><a href="cart.html">Your bag</a></li></ul></div>
-    <div><h4>Brand</h4><ul><li><a href="about.html">About us</a></li><li><a href="about.html#services">Services</a></li><li><a href="diaries.html">COA Diaries</a></li><li><a href="contact.html#showroom">Showroom</a></li></ul></div>
+    <form id="joinForm" novalidate><h4>Newsletter</h4><label class="sr" for="email">Email address</label><div class="field"><input id="email" type="email" placeholder="Email address" autocomplete="email"><button type="submit">Subscribe</button></div><div class="form-note" id="joinNote" aria-live="polite"></div></form>
+    <div><h4>Client services</h4><ul><li><a href="faq.html#delivery">Delivery &amp; exchanges</a></li><li><a href="faq.html">FAQ</a></li><li><a href="contact.html">Contact</a></li><li><a href="account.html">Account</a></li></ul></div>
+    <div><h4>The house</h4><ul><li><a href="about.html">About</a></li><li><a href="diaries.html">Diaries</a></li><li><a href="contact.html#showroom">Stores</a></li></ul></div>
+    <div><h4>Follow</h4>${social("foot-social")}</div>
   </div>
-  <div class="legal"><span>© Chiefs of Angels 2026</span><span>Prototype v4 for team review · payments, accounts and emails are simulated · not the live store</span></div>
+  <div class="legal"><span>© Chiefs of Angels 2026</span><span>Prototype v5 for review · nothing here is sent or charged</span></div>
 </div></footer>
-<div class="review-wrap"><button class="review" id="reviewBtn" aria-expanded="false" aria-controls="reviewPanel"><span class="hide-m">Prototype v4 · </span>All pages</button>
+<div class="review-wrap"><button class="review" id="reviewBtn" aria-expanded="false" aria-controls="reviewPanel"><span class="hide-m">Prototype v5 · </span>All pages</button>
 <nav class="review-panel" id="reviewPanel" hidden aria-label="All prototype pages"><b>Pages to review</b>
 <a href="index.html">Home</a><a href="collection.html#shop">Collection · Shop all</a><a href="collection.html#skool-of-rock">Collection · Skool of Rock</a><a href="product.html#flatground-bomber-jacket">Product</a><a href="diaries.html">COA Diaries</a><a href="diary.html#story-beneath-the-sound">Diary · Story Beneath the Sound</a><a href="diary.html#skool-of-rock">Diary · Skool of Rock lookbook</a><a href="about.html">About &amp; Services</a><a href="contact.html">Contact</a><a href="faq.html">FAQ</a><a href="cart.html">Cart</a><a href="checkout.html">Checkout</a><a href="account.html">My account</a><a href="wishlist.html">Wishlist</a><a href="404.html">404 page</a><button id="resetDemo">Reset prototype data</button></nav></div>
 <div class="scrim" id="scrim"></div>
 <aside class="drawer" id="drawer" aria-label="Shopping bag" aria-hidden="true">
-  <header><h2>Your bag</h2><button class="icon-btn" id="closeBag" aria-label="Close bag"><svg><use href="#i-x"/></svg></button></header>
+  <header><h2>Bag</h2><button class="txt-btn" id="closeBag" aria-label="Close bag">Close</button></header>
   <div class="items" id="items"></div>
   <footer class="sum">
     <small id="shipMsg"></small>
@@ -152,20 +141,20 @@ const footer=`<section class="join" id="join"><div class="wrap join-grid">
   </footer>
 </aside>
 <nav class="mnav" id="mnav" aria-label="Menu" aria-hidden="true">
-  <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:12px"><img src="img/logo.png" alt="Chiefs of Angels" style="height:24px;width:auto"><button class="icon-btn" id="closeNav" aria-label="Close menu"><svg><use href="#i-x"/></svg></button></div>
-  <a href="${curl("new-in")}">New In</a>
-  <details><summary>Shop</summary><ul><li><a href="${curl("shop")}">Shop all</a></li><li><a href="${curl("jackets")}">Jackets</a></li><li><a href="${curl("outerwear")}">Outerwear</a></li><li><a href="${curl("loungewear")}">Loungewear</a></li><li><a href="${curl("accessories")}">Caps</a></li><li><a href="${curl("sale")}">Sale</a></li></ul></details>
+  <div style="display:flex;justify-content:flex-end;margin-bottom:18px"><button class="txt-btn" id="closeNav" aria-label="Close menu">Close</button></div>
+  <a href="${curl("new-in")}">New in</a>
+  <details><summary>Shop</summary><ul><li><a href="${curl("shop")}">All</a></li><li><a href="${curl("jackets")}">Jackets</a></li><li><a href="${curl("outerwear")}">Outerwear</a></li><li><a href="${curl("loungewear")}">Loungewear</a></li><li><a href="${curl("accessories")}">Headgear</a></li><li><a href="${curl("sale")}">Sale</a></li></ul></details>
   <details><summary>Collections</summary><ul><li><a href="${curl("skool-of-rock")}">Skool of Rock</a></li><li><a href="${curl("new-jozi")}">New Jozi</a></li><li><a href="${curl("heart-supplies")}">Heart Supplies</a></li><li><a href="${curl("denim-edit")}">Denim Edit</a></li><li><a href="${curl("logo-threads")}">Logo Threads</a></li></ul></details>
-  <a href="diaries.html">COA Diaries</a>
+  <a href="diaries.html">Diaries</a>
   <a href="about.html">About</a>
+  <a href="account.html">Account</a>
   <a href="wishlist.html">Wishlist</a>
-  <a href="account.html">My account</a>
   <a href="contact.html">Contact</a>
   ${social("menu-social")}
 </nav>
 <div class="search" id="search" role="dialog" aria-label="Search" aria-hidden="true">
   <div class="wrap">
-    <div class="s-bar"><svg><use href="#i-search"/></svg><label class="sr" for="q">Search the store</label><input id="q" type="search" placeholder="Search jackets, Skool of Rock, caps…" autocomplete="off"><button class="icon-btn" id="closeSearch" aria-label="Close search"><svg><use href="#i-x"/></svg></button></div>
+    <div class="s-bar"><label class="sr" for="q">Search the store</label><input id="q" type="search" placeholder="Search" autocomplete="off"><button class="txt-btn" id="closeSearch" aria-label="Close search">Close</button></div>
     <div class="s-res" id="sres"></div>
   </div>
 </div>
@@ -191,7 +180,7 @@ function saveCart(){ store.set("coa-bag",cart); render(); listeners.forEach(f=>f
 function render(){
   const {count,sub}=bagTotals();
   const b=$("#bagCount"); if(!b) return;
-  b.textContent=count; b.classList.toggle("on",count>0);
+  b.textContent=count?`(${count})`:""; b.classList.toggle("on",count>0);
   $("#subtotal").textContent=R(sub);
   $("#shipMsg").innerHTML=!count?"Add a few pieces to see delivery options.":payflex(sub);
   $("#items").innerHTML=!cart.length?`<div class="empty"><span class="story">Your bag is empty.</span><a href="${curl("new-in")}" style="text-decoration:underline;text-underline-offset:3px">Start with something new in.</a></div>`:
@@ -202,8 +191,7 @@ function toast(msg,btn=true){ $("#toastMsg").textContent=msg; $("#toastView").hi
 function add(id,s,q=1){
   const f=cart.find(c=>c.id===id&&c.s===s); f?f.q+=q:cart.push({id,s,q});
   saveCart();
-  const bag=$("#bagBtn"); bag.classList.remove("bump"); void bag.offsetWidth; bag.classList.add("bump");
-  toast(`${BY[id].n} · ${s} added to bag`);
+    toast(`Added to bag: ${BY[id].n}, ${s}`);
 }
 function openBag(){ $("#drawer").classList.add("on"); $("#scrim").classList.add("on"); $("#drawer").setAttribute("aria-hidden","false"); $("#toast").classList.remove("on") }
 function closeAll(){ document.querySelectorAll(".drawer,.scrim,.mnav,.sheet,.search").forEach(el=>{el.classList.remove("on");el.setAttribute("aria-hidden","true")}); document.body.style.overflow="" }
@@ -224,7 +212,7 @@ function searchAll(q){
 }
 function drawSearch(){
   const q=$("#q").value, r=searchAll(q), box=$("#sres");
-  if(!r){ box.innerHTML=`<div class="s-sug"><span class="eyebrow">Popular</span>${["Leather jacket","Skool of Rock","Denim","Caps","Rock Stars Never Die","Heart"].map(s=>`<button class="chip" data-s="${s}">${s}</button>`).join("")}</div>`; return }
+  if(!r){ box.innerHTML=`<div class="s-sug">${["Leather jacket","Skool of Rock","Denim","Caps","Rock Stars Never Die","Heart"].map(s=>`<button class="chip" data-s="${s}">${s}</button>`).join("")}</div>`; return }
   const n=r.prods.length+r.cols.length+r.pages.length;
   if(!n){ box.innerHTML=`<p class="s-none"><span class="story">Nothing matches “${esc(q)}”.</span> Try a type like “jacket” or a collection like “New Jozi”.</p>`; return }
   box.innerHTML=`${r.cols.length||r.pages.length?`<div class="s-links">${r.cols.map(c=>`<a href="${c.u}"><b>${esc(c.t)}</b><span>${c.k}</span></a>`).join("")}${r.pages.map(c=>`<a href="${c.u}"><b>${esc(c.t)}</b><span>${esc(c.k)}</span></a>`).join("")}</div>`:""}
@@ -232,7 +220,8 @@ function drawSearch(){
 }
 function openSearch(){ const s=$("#search"); s.classList.add("on"); s.setAttribute("aria-hidden","false"); $("#scrim").classList.add("on"); drawSearch(); setTimeout(()=>$("#q").focus(),60) }
 
-function mount(active){
+function mount(active,opt={}){
+  if(opt.over) document.body.classList.add("over");
   document.body.insertAdjacentHTML("afterbegin",sprite+header(active));
   document.body.insertAdjacentHTML("beforeend",footer);
   $("#bagBtn").onclick=openBag; $("#toastView").onclick=openBag; $("#closeBag").onclick=closeAll; $("#scrim").onclick=closeAll;
@@ -261,7 +250,7 @@ function mount(active){
     const [f,h]=a.getAttribute("href").split("#");
     try{ sessionStorage.setItem("coa-hash:"+f,h) }catch(_){}
   },true);
-  const hdr=$("#hdr"); addEventListener("scroll",()=>hdr.classList.toggle("scrolled",scrollY>8),{passive:true});
+  const hdr=$("#hdr"), onS=()=>hdr.classList.toggle("scrolled",scrollY>8); addEventListener("scroll",onS,{passive:true}); onS();
   $("#joinForm").addEventListener("submit",e=>{
     e.preventDefault(); const v=$("#email").value.trim(), n=$("#joinNote");
     if(!/^[^@\s]+@[^@\s]+\.[^@\s]+$/.test(v)){ n.className="form-note"; n.textContent="Enter an email address like name@example.com."; return }
