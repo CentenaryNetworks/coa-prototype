@@ -15,37 +15,38 @@
 <body>
 <main id="top">
 
-<section class="v5-hero" aria-label="This season">
-  <a class="half" href="collection.html#loungewear"><img src="img/cat-loungewear.jpg" alt="Model in sunglasses and a white Chiefs of Angels graphic tee, black and white photo" style="object-position:58% 4%"><span class="lbl">Loungewear</span></a>
-  <a class="half" href="collection.html#skool-of-rock"><img src="img/sor-look-4.jpg" alt="Model in a white Universite tee and a black leather skirt" style="object-position:center 30%"><span class="lbl">Skool of Rock</span></a>
+<section class="v5-slider" aria-label="This season" aria-roledescription="carousel">
+  <div class="track" id="heroTrack">
+    <a class="hs" href="collection.html#loungewear" aria-label="Loungewear, slide 1 of 2"><img src="img/cat-loungewear.jpg" alt="Model in sunglasses and a white Chiefs of Angels graphic tee, black and white photo" style="object-position:58% 4%"><span class="lbl">Loungewear</span></a>
+    <a class="hs" href="collection.html#skool-of-rock" aria-label="Skool of Rock, slide 2 of 2"><img src="img/sor-look-4.jpg" alt="Model in a white Universite tee and a black leather skirt" style="object-position:center 18%"><span class="lbl">Skool of Rock</span></a>
+  </div>
+  <button class="nav-arrow prev" id="heroPrev" aria-label="Previous picture">‹</button>
+  <button class="nav-arrow next" id="heroNext" aria-label="Next picture">›</button>
+  <div class="dots" id="heroDots" role="tablist" aria-label="Choose a picture"></div>
   <h1 class="sr">Chiefs of Angels</h1>
 </section>
 
 <div class="v5-label"><h2>New in</h2><a href="collection.html#new-in">View all</a></div>
-<div class="p-row" id="newin"></div>
+<div class="h-row" id="newin" aria-label="New in, swipe for more"></div>
 
-<a class="v5-band" href="collection.html#jackets">
-  <img src="img/home-slide-3.jpg" alt="Model in a black leather jacket against a white door" loading="lazy" style="object-position:center 35%">
+<a class="v5-band v5-motion" href="collection.html#jackets" aria-label="Outerwear: the final layer. Shop jackets">
+  <!-- When COA supplies the campaign video, replace the two images below with:
+       <video autoplay muted loop playsinline poster="img/home-slide-3.jpg"><source src="media/final-layer.mp4" type="video/mp4"></video> -->
+  <img class="m1" src="img/home-slide-3.jpg" alt="" style="object-position:center 35%">
+  <img class="m2" src="img/cat-jackets.jpg" alt="" style="object-position:30% 30%">
   <div class="over-t"><span>Outerwear<em>The final layer.</em></span><span class="go">Shop jackets</span></div>
 </a>
-<div class="p-row" id="layer" style="margin-top:1px"></div>
 
-<section class="v5-statement">
-  <p>Spiritual, rebellious and timeless.</p>
-  <small>Rock ’n’ roll · Spirituality · Sustainability</small>
-</section>
-
-<div class="v5-pair">
-  <a href="collection.html#heart-supplies"><img src="img/cat-newin.jpg" alt="Model in a black sweater with a red heart patch against a brick wall" loading="lazy" style="object-position:62% center"><span>Heart Supplies</span></a>
-  <a href="collection.html#logo-threads"><img src="img/cat-logothreads.jpg" alt="Model in a COA beanie and black logo hoodie against a black backdrop" loading="lazy" style="object-position:center 25%"><span>Logo Threads</span></a>
-</div>
+<a class="v5-full" href="collection.html#heart-supplies"><img src="img/cat-newin.jpg" alt="Model in a black sweater with a red heart patch against a brick wall" loading="lazy" style="object-position:62% center"><span>Heart Supplies</span></a>
+<a class="v5-full" href="collection.html#logo-threads"><img src="img/cat-logothreads.jpg" alt="Model in a COA beanie and black logo hoodie against a black backdrop" loading="lazy" style="object-position:center 25%"><span>Logo Threads</span></a>
 
 <div class="v5-label"><h2>Diaries</h2><a href="diaries.html">All entries</a></div>
-<div class="v5-journal">
+<div class="h-row journal" aria-label="Diaries, swipe for more">
   <a href="diary.html#story-beneath-the-sound"><figure><img src="img/diary-01.jpg" alt="" loading="lazy"></figure><p>The story beneath the sound</p><small>Vol. 1 · Roots</small></a>
   <a href="diary.html#skool-of-rock"><figure><img src="img/sor-look-1.jpg" alt="" loading="lazy" style="filter:none"></figure><p>Youth is an experiment</p><small>Skool of Rock lookbook</small></a>
   <a href="diary.html#story-beneath-the-sound"><figure><img src="img/diary-07.jpg" alt="" loading="lazy"></figure><p>Rock ’n’ roll isn’t just a genre</p><small>Vol. 1 · Chapter four</small></a>
   <a href="diary.html#story-beneath-the-sound"><figure><img src="img/diary-02.jpg" alt="" loading="lazy"></figure><p>Before there was rock, there was gospel</p><small>Vol. 1 · Chapter two</small></a>
+  <a href="diary.html#story-beneath-the-sound"><figure><img src="img/diary-05.jpg" alt="" loading="lazy"></figure><p>The Diaries, volume one</p><small>Read the full story</small></a>
 </div>
 <div style="height:96px"></div>
 
@@ -56,8 +57,19 @@
 (function(){
 const {card,mount,$}=COA;
 mount("home",{over:true});
-$("#newin").innerHTML=["black-angel-skirt","flatground-bomber-jacket","open-heavens-tank","electric-lamb-leather-bomber"].map(id=>card(id)).join("");
-$("#layer").innerHTML=["aretha-leather-jacket","core-joplin-jacket","studded-raven","the-nomad-jacket"].map(id=>card(id)).join("");
+const fresh=COA.P.filter(p=>p.isNew).map(p=>p.id);
+const lead=["black-angel-skirt","flatground-bomber-jacket","open-heavens-tank","electric-lamb-leather-bomber"];
+$("#newin").innerHTML=[...new Set([...lead,...fresh])].slice(0,10).map(id=>card(id)).join("");
+
+/* hero: one full-screen picture per swipe */
+const tr=$("#heroTrack"), slides=[...tr.children], dots=$("#heroDots");
+dots.innerHTML=slides.map((s,i)=>`<button role="tab" aria-label="Picture ${i+1}" aria-selected="${!i}"></button>`).join("");
+const go=i=>tr.scrollTo({left:Math.max(0,Math.min(i,slides.length-1))*tr.clientWidth,behavior:"smooth"});
+const cur=()=>Math.round(tr.scrollLeft/tr.clientWidth);
+tr.addEventListener("scroll",()=>{ const c=cur(); [...dots.children].forEach((d,i)=>d.setAttribute("aria-selected",i===c)); $("#heroPrev").disabled=c===0; $("#heroNext").disabled=c===slides.length-1 },{passive:true});
+dots.addEventListener("click",e=>{ const b=e.target.closest("button"); if(b) go([...dots.children].indexOf(b)) });
+$("#heroPrev").onclick=()=>go(cur()-1); $("#heroNext").onclick=()=>go(cur()+1);
+$("#heroPrev").disabled=true;
 })();
 </script>
 </body>

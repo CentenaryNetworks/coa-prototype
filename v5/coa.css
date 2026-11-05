@@ -1200,3 +1200,50 @@ body.over .hdr.scrolled,body.over .hdr:hover,body.over .hdr:focus-within{backgro
 .v5-hero .lbl{position:absolute;left:var(--gutter);bottom:64px;z-index:1;font:var(--ui);letter-spacing:.12em;text-transform:uppercase;border-bottom:1px solid transparent;padding-bottom:2px}
 .v5-hero .half:hover .lbl{border-bottom-color:#fff}
 @media (max-width:640px){ .v5-hero{grid-template-columns:1fr;grid-template-rows:1fr 1fr} .v5-hero .lbl{bottom:22px} .v5-hero .half+.half .lbl{bottom:64px} }
+
+/* ===== v5.1 · Nathi's notes (5 Nov): every picture full screen, rows that swipe ===== */
+/* hero: one full-screen picture per swipe */
+.v5-slider{position:relative;height:100svh;min-height:520px;background:#111;color:#fff;padding:0!important}
+.v5-slider .track{display:flex;height:100%;overflow-x:auto;scroll-snap-type:x mandatory;scrollbar-width:none;overscroll-behavior-x:contain}
+.v5-slider .track::-webkit-scrollbar{display:none}
+.v5-slider .hs{position:relative;flex:0 0 100%;height:100%;scroll-snap-align:start;scroll-snap-stop:always;display:block}
+.v5-slider .hs img{width:100%;height:100%;object-fit:cover}
+.v5-slider .hs::after{content:"";position:absolute;inset:auto 0 0 0;height:32%;background:linear-gradient(transparent,rgba(0,0,0,.38));pointer-events:none}
+.v5-slider .lbl{position:absolute;left:var(--gutter);bottom:64px;z-index:1;font:var(--ui);letter-spacing:.12em;text-transform:uppercase;border-bottom:1px solid #fff;padding-bottom:2px}
+.v5-slider .dots{position:absolute;left:0;right:0;bottom:30px;display:flex;justify-content:center;gap:10px;z-index:2}
+.v5-slider .dots button{width:28px;height:2px;background:rgba(255,255,255,.45);padding:0;border:0}
+.v5-slider .dots button[aria-selected="true"]{background:#fff}
+.v5-slider .nav-arrow{position:absolute;top:50%;transform:translateY(-50%);z-index:2;width:52px;height:52px;color:#fff;font:300 40px/1 var(--sans);opacity:.8}
+.v5-slider .nav-arrow:hover{opacity:1}
+.v5-slider .nav-arrow:disabled{opacity:0;pointer-events:none}
+.v5-slider .prev{left:10px}.v5-slider .next{right:10px}
+/* rows: one line, swipe sideways */
+.h-row{display:grid;grid-auto-flow:column;grid-auto-columns:calc((100% - 3px)/4);gap:1px;overflow-x:auto;scroll-snap-type:x mandatory;scrollbar-width:none;overscroll-behavior-x:contain}
+.h-row::-webkit-scrollbar{display:none}
+.h-row>*{scroll-snap-align:start;min-width:0}
+.h-row.journal a{display:block}
+.h-row.journal figure{margin:0;aspect-ratio:3/4;overflow:hidden;background:#111}
+.h-row.journal img{width:100%;height:100%;object-fit:cover;filter:grayscale(1)}
+.h-row.journal p{margin:10px 12px 0;font:var(--ui);letter-spacing:.06em;text-transform:uppercase}
+.h-row.journal small{display:block;margin:4px 12px 0;color:var(--smoke);font-size:12px}
+/* every campaign picture: full screen */
+.v5-band{height:100svh;min-height:520px;margin-top:64px}
+.v5-full{position:relative;display:block;height:100svh;min-height:520px;overflow:hidden;background:#111;color:#fff;margin-top:1px}
+.v5-full img{width:100%;height:100%;object-fit:cover}
+.v5-full span{position:absolute;left:var(--gutter);bottom:30px;font:var(--ui);letter-spacing:.12em;text-transform:uppercase;border-bottom:1px solid #fff;padding-bottom:2px}
+.v5-full::after{content:"";position:absolute;inset:auto 0 0 0;height:30%;background:linear-gradient(transparent,rgba(0,0,0,.35));pointer-events:none}
+.v5-full span{z-index:1}
+.c5-band{height:100svh;min-height:520px}
+/* the final layer: keeps running (slow crossfade and drift) until a real video is supplied */
+.v5-motion img,.v5-motion video{position:absolute;inset:0;width:100%;height:100%;object-fit:cover}
+.v5-motion .m1{animation:coaDrift 18s ease-in-out infinite alternate}
+.v5-motion .m2{animation:coaFade 18s ease-in-out infinite,coaDrift2 18s ease-in-out infinite alternate}
+.v5-motion::after{content:"";position:absolute;inset:auto 0 0 0;height:30%;background:linear-gradient(transparent,rgba(0,0,0,.4));pointer-events:none}
+.v5-motion .over-t{z-index:1}
+@keyframes coaDrift{from{transform:scale(1)}to{transform:scale(1.08) translateY(-1.5%)}}
+@keyframes coaDrift2{from{transform:scale(1.08)}to{transform:scale(1) translateX(-1.5%)}}
+@keyframes coaFade{0%,38%{opacity:0}50%,88%{opacity:1}100%{opacity:0}}
+@media (prefers-reduced-motion:reduce){.v5-motion .m1,.v5-motion .m2{animation:none}.v5-motion .m2{opacity:0}}
+@media (max-width:1080px){ .h-row{grid-auto-columns:calc((100% - 2px)/2.4)} }
+@media (max-width:640px){ .h-row{grid-auto-columns:calc((100% - 1px)/1.6)} .v5-slider .nav-arrow{display:none} .v5-slider .lbl{bottom:58px} }
+.v5-band .over-t{bottom:64px} .v5-full span{bottom:64px}
