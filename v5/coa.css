@@ -1247,3 +1247,6 @@ body.over .hdr.scrolled,body.over .hdr:hover,body.over .hdr:focus-within{backgro
 @media (max-width:1080px){ .h-row{grid-auto-columns:calc((100% - 2px)/2.4)} }
 @media (max-width:640px){ .h-row{grid-auto-columns:calc((100% - 1px)/1.6)} .v5-slider .nav-arrow{display:none} .v5-slider .lbl{bottom:58px} }
 .v5-band .over-t{bottom:64px} .v5-full span{bottom:64px}
+/* the final layer: COA campaign film, full screen, looping */
+.v5-motion video{position:absolute;inset:0;width:100%;height:100%;object-fit:cover;object-position:center 40%}
+@media (max-width:640px){ .v5-motion video{object-position:43% 40%} }
