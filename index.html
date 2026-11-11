@@ -30,10 +30,7 @@
 <div class="h-row" id="newin" aria-label="New in, swipe for more"></div>
 
 <a class="v5-band v5-motion" href="collection.html#jackets" aria-label="Outerwear: the final layer. Shop jackets">
-  <!-- When COA supplies the campaign video, replace the two images below with:
-       <video autoplay muted loop playsinline poster="img/home-slide-3.jpg"><source src="media/final-layer.mp4" type="video/mp4"></video> -->
-  <img class="m1" src="img/home-slide-3.jpg" alt="" style="object-position:center 35%">
-  <img class="m2" src="img/cat-jackets.jpg" alt="" style="object-position:30% 30%">
+  <video class="vid" autoplay muted loop playsinline preload="auto" poster="img/final-layer-poster.jpg" aria-hidden="true"><source src="media/final-layer.mp4" type="video/mp4"><source src="media/final-layer.webm" type="video/webm"></video>
   <div class="over-t"><span>Outerwear<em>The final layer.</em></span><span class="go">Shop jackets</span></div>
 </a>
 
@@ -70,6 +67,17 @@ tr.addEventListener("scroll",()=>{ const c=cur(); [...dots.children].forEach((d,
 dots.addEventListener("click",e=>{ const b=e.target.closest("button"); if(b) go([...dots.children].indexOf(b)) });
 $("#heroPrev").onclick=()=>go(cur()-1); $("#heroNext").onclick=()=>go(cur()+1);
 $("#heroPrev").disabled=true;
+
+/* the final layer: keep the film running; pause it only when off screen, and for people who ask for less motion */
+const vid=document.querySelector(".v5-motion video");
+if(vid){
+  const still=matchMedia("(prefers-reduced-motion: reduce)");
+  const play=()=>{ if(!still.matches){ const p=vid.play(); if(p&&p.catch) p.catch(()=>{}) } };
+  if(still.matches){ vid.removeAttribute("autoplay"); vid.pause() }
+  if("IntersectionObserver" in window) new IntersectionObserver(es=>es.forEach(e=>e.isIntersecting?play():vid.pause()),{threshold:.15}).observe(vid);
+  vid.addEventListener("ended",()=>{ vid.currentTime=0; play() });
+  document.addEventListener("visibilitychange",()=>{ if(!document.hidden) play() });
+}
 })();
 </script>
 </body>
