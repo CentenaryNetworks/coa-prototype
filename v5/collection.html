@@ -80,6 +80,7 @@ function list(){
 
 function grid(){
   const items=list(), g=$("#grid");
+  if(!P.filter(C[slug].f).length){ g.innerHTML=`<div class="c5-empty">Every piece in ${esc(C[slug].t)} has sold out.<br><br><a class="link-arrow" href="collection.html#new-in">Shop new in</a></div>`; $("#more").innerHTML=""; $("#count").textContent="0 pieces"; return }
   if(!items.length){ g.innerHTML=`<div class="c5-empty">Nothing here in that style yet. <button class="link-arrow" id="reset">Show all</button></div>`; $("#more").innerHTML=""; $("#count").textContent="0 pieces"; $("#reset").onclick=()=>{type="all";chips();grid()}; return }
   g.innerHTML=items.slice(0,shown).map(p=>card(p.id,{eager:true})).join("");
   const n=Math.min(shown,items.length);

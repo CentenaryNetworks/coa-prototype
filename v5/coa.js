@@ -29,7 +29,9 @@ const C={
  "denim-edit":{t:"Denim Edit",k:"Collection",word:"Denim Edit",d:"Classic denim reworked with patches, embroidery, leather panelling and stars. No two finishes are quite the same.",f:p=>p.cols.includes("denim-edit"),q:"Each patch contributes to the story of the garment."},
  "regenerated-vintage":{t:"Regenerated Vintage",k:"Collection",word:"Regenerated",d:"Up-cycled, recycled and repurposed pieces, given a second life with a rock ’n’ roll sensibility.",f:p=>p.cols.includes("regenerated-vintage")}
 };
-const SWITCH=["shop","new-in","skool-of-rock","new-jozi","heart-supplies","denim-edit","logo-threads","sale","outerwear","loungewear","accessories"];
+/* a collection only appears in menus while the live store has pieces in it (Logo Threads, Sale and Regenerated Vintage are empty as of 12 Nov 2026) */
+const has=slug=>!!C[slug]&&P.some(C[slug].f);
+const SWITCH=["shop","new-in","skool-of-rock","new-jozi","heart-supplies","denim-edit","logo-threads","sale","outerwear","loungewear","accessories"].filter(has);
 
 /* Diaries entries come from the live site's COA Diaries pages */
 const DIARIES=[
@@ -39,6 +41,8 @@ const DIARIES=[
   prods:["rock-stars-never-die-tee","thunderstruck-tee","bowie-tee","rolling-stones-us-tour-tee","stones-love-coa-tee","rock-stars-never-die-sweater","rolling-stones-flannel","multi-band-denim-shirt"],
   dek:"Six chapters on where rock ’n’ roll came from: gospel, the blues, the guitar, and the feeling underneath it all."}
 ];
+/* Diaries only link to pieces still on sale */
+DIARIES.forEach(d=>{ if(d.prods) d.prods=d.prods.filter(id=>BY[id]) });
 const PAGES=[
  {t:"About us",u:"about.html",k:"Rock ’n’ roll history, spirituality, sustainability"},
  {t:"Services",u:"about.html#services",k:"What we make and how"},
@@ -54,6 +58,7 @@ const $=s=>document.querySelector(s);
 const esc=s=>String(s??"").replace(/[&<>"]/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;"}[c]));
 const store={get(k,d){try{const v=localStorage.getItem(k);return v?JSON.parse(v):d}catch(e){return d}},set(k,v){try{localStorage.setItem(k,JSON.stringify(v))}catch(e){}}};
 const purl=id=>"product.html#"+id, curl=s=>"collection.html#"+s;
+const li=(slug,label)=>has(slug)?`<li><a href="${curl(slug)}">${label}</a></li>`:"";
 const img=(n)=>`img/${n}.jpg`;
 const priceHTML=p=>p.was?`<span class="price"><s>${R(p.was)}</s> <span class="now">${R(p.p)}</span></span>`:`<span class="price">${R(p.p)}</span>`;
 
@@ -101,8 +106,8 @@ function header(active){
   <ul class="nav" aria-label="Shop">
     <li><button aria-haspopup="true"${active==="shop"?' class="on"':""}>Shop</button>
       <div class="mega"><div class="wrap">
-        <ul><li><a href="${curl("new-in")}">New in</a></li><li><a href="${curl("shop")}">All</a></li><li><a href="${curl("jackets")}">Jackets</a></li><li><a href="${curl("outerwear")}">Outerwear</a></li><li><a href="${curl("loungewear")}">Loungewear</a></li><li><a href="${curl("accessories")}">Headgear</a></li><li><a href="${curl("sale")}">Sale</a></li></ul>
-        <ul><li><a href="${curl("skool-of-rock")}">Skool of Rock</a></li><li><a href="${curl("new-jozi")}">New Jozi</a></li><li><a href="${curl("heart-supplies")}">Heart Supplies</a></li><li><a href="${curl("denim-edit")}">Denim Edit</a></li><li><a href="${curl("logo-threads")}">Logo Threads</a></li></ul>
+        <ul>${li("new-in","New in")}${li("shop","All")}${li("jackets","Jackets")}${li("outerwear","Outerwear")}${li("loungewear","Loungewear")}${li("accessories","Headgear")}${li("sale","Sale")}</ul>
+        <ul>${li("skool-of-rock","Skool of Rock")}${li("new-jozi","New Jozi")}${li("heart-supplies","Heart Supplies")}${li("denim-edit","Denim Edit")}${li("logo-threads","Logo Threads")}</ul>
         <figure><img src="img/home-slide-3.jpg" alt="" loading="lazy"><figcaption>The final layer</figcaption></figure>
       </div></div></li>
     <li><a href="diaries.html"${a("diaries")}>Diaries</a></li>
@@ -143,8 +148,8 @@ const footer=`<footer class="foot"><div class="wrap">
 <nav class="mnav" id="mnav" aria-label="Menu" aria-hidden="true">
   <div style="display:flex;justify-content:flex-end;margin-bottom:18px"><button class="txt-btn" id="closeNav" aria-label="Close menu">Close</button></div>
   <a href="${curl("new-in")}">New in</a>
-  <details><summary>Shop</summary><ul><li><a href="${curl("shop")}">All</a></li><li><a href="${curl("jackets")}">Jackets</a></li><li><a href="${curl("outerwear")}">Outerwear</a></li><li><a href="${curl("loungewear")}">Loungewear</a></li><li><a href="${curl("accessories")}">Headgear</a></li><li><a href="${curl("sale")}">Sale</a></li></ul></details>
-  <details><summary>Collections</summary><ul><li><a href="${curl("skool-of-rock")}">Skool of Rock</a></li><li><a href="${curl("new-jozi")}">New Jozi</a></li><li><a href="${curl("heart-supplies")}">Heart Supplies</a></li><li><a href="${curl("denim-edit")}">Denim Edit</a></li><li><a href="${curl("logo-threads")}">Logo Threads</a></li></ul></details>
+  <details><summary>Shop</summary><ul>${li("shop","All")}${li("jackets","Jackets")}${li("outerwear","Outerwear")}${li("loungewear","Loungewear")}${li("accessories","Headgear")}${li("sale","Sale")}</ul></details>
+  <details><summary>Collections</summary><ul>${li("skool-of-rock","Skool of Rock")}${li("new-jozi","New Jozi")}${li("heart-supplies","Heart Supplies")}${li("denim-edit","Denim Edit")}${li("logo-threads","Logo Threads")}</ul></details>
   <a href="diaries.html">Diaries</a>
   <a href="about.html">About</a>
   <a href="account.html">Account</a>

@@ -21,7 +21,7 @@ If v5 is approved it replaces v4 at the main link. If not, v4 stays exactly as i
 - **Product page:** large stacked images, with the details in a quiet column beside them (name, price, PayFlex, size, add to bag, one dispatch line) and Details / Delivery & returns / Help folded away.
 - **Type:** one small uppercase sans for the interface, a serif for the rare editorial line. The bold condensed display face is gone. Red is kept for the heart and for warnings only.
 
-Prepared by MPL AI (NewMPL Ventures) for Centenary Networks. Product names, prices, photos and page text come from the live store, exported on 14 October 2026.
+Prepared by MPL AI (NewMPL Ventures) for Centenary Networks. Product names, prices, photos and page text come from the live store. v5 product data was refreshed from the live store on 12 November 2026 (51 pieces, including the Peace & Love / Lover drop).
 
 ## This is a prototype, not the store
 
@@ -72,7 +72,7 @@ Plain HTML, CSS and JavaScript, with no build step.
 
 - `coa.css`: all styles
 - `coa.js`: header, footer, search, bag, wishlist and shared helpers
-- `coa-data.js`: the 75 products, generated from the WooCommerce Store API
+- `coa-data.js`: the products, generated from the WooCommerce Store API (v5: 51 pieces as of 12 Nov 2026; v4 still has the 75 from 14 Oct)
 - `img/`: product and campaign photos, resized for the web
 
 When the design is approved, these files become the basis of a custom WordPress theme. WooCommerce (products, cart, checkout, orders, accounts) stays exactly as it is; only the storefront templates change.

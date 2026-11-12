@@ -36,7 +36,7 @@
 </section>
 
 <a class="v5-full" href="collection.html#heart-supplies"><img src="img/cat-newin.jpg" alt="Model in a black sweater with a red heart patch against a brick wall" loading="lazy" style="object-position:62% center"><span>Heart Supplies</span></a>
-<a class="v5-full" href="collection.html#logo-threads"><img src="img/cat-logothreads.jpg" alt="Model in a COA beanie and black logo hoodie against a black backdrop" loading="lazy" style="object-position:center 25%"><span>Logo Threads</span></a>
+<a class="v5-full" href="collection.html#accessories"><img src="img/cat-logothreads.jpg" alt="Model in a COA beanie and black hoodie against a black backdrop" loading="lazy" style="object-position:center 25%"><span>Headgear</span></a>
 
 <div class="v5-label"><h2>Diaries</h2><a href="diaries.html">All entries</a></div>
 <div class="h-row journal" aria-label="Diaries, swipe for more">
@@ -55,9 +55,8 @@
 (function(){
 const {card,mount,$}=COA;
 mount("home",{over:true});
-const fresh=COA.P.filter(p=>p.isNew).map(p=>p.id);
-const lead=["black-angel-skirt","flatground-bomber-jacket","open-heavens-tank","electric-lamb-leather-bomber"];
-$("#newin").innerHTML=[...new Set([...lead,...fresh])].slice(0,10).map(id=>card(id)).join("");
+/* newest first, in the live store's own order */
+$("#newin").innerHTML=COA.P.filter(p=>p.isNew).sort((a,b)=>a.o-b.o).slice(0,12).map(p=>card(p.id)).join("");
 
 /* the two campaign pictures: one full-screen picture per swipe */
 const tr=$("#heroTrack"), slides=[...tr.children], dots=$("#heroDots");
