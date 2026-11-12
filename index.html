@@ -10,12 +10,22 @@
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Instrument+Serif:ital@0;1&display=swap">
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Archivo:wght@400;500;600&display=swap">
 <link rel="stylesheet" href="coa.css">
+<link rel="preload" as="image" href="img/final-layer-poster.jpg">
 <style>body{margin:0}</style>
 </head>
 <body>
 <main id="top">
 
-<section class="v5-slider" aria-label="This season" aria-roledescription="carousel">
+<a class="v5-band v5-motion v5-hero-vid" href="collection.html#jackets" aria-label="Outerwear: the final layer. Shop jackets">
+  <video class="vid" autoplay muted loop playsinline preload="auto" poster="img/final-layer-poster.jpg" aria-hidden="true"><source src="media/final-layer.mp4" type="video/mp4"><source src="media/final-layer.webm" type="video/webm"></video>
+  <div class="over-t"><span>Outerwear<em>The final layer.</em></span><span class="go">Shop jackets</span></div>
+  <h1 class="sr">Chiefs of Angels</h1>
+</a>
+
+<div class="v5-label"><h2>New in</h2><a href="collection.html#new-in">View all</a></div>
+<div class="h-row" id="newin" aria-label="New in, swipe for more"></div>
+
+<section class="v5-slider v5-mid" aria-label="This season" aria-roledescription="carousel">
   <div class="track" id="heroTrack">
     <a class="hs" href="collection.html#loungewear" aria-label="Loungewear, slide 1 of 2"><img src="img/cat-loungewear.jpg" alt="Model in sunglasses and a white Chiefs of Angels graphic tee, black and white photo" style="object-position:58% 4%"><span class="lbl">Loungewear</span></a>
     <a class="hs" href="collection.html#skool-of-rock" aria-label="Skool of Rock, slide 2 of 2"><img src="img/sor-look-4.jpg" alt="Model in a white Universite tee and a black leather skirt" style="object-position:center 18%"><span class="lbl">Skool of Rock</span></a>
@@ -23,16 +33,7 @@
   <button class="nav-arrow prev" id="heroPrev" aria-label="Previous picture">‹</button>
   <button class="nav-arrow next" id="heroNext" aria-label="Next picture">›</button>
   <div class="dots" id="heroDots" role="tablist" aria-label="Choose a picture"></div>
-  <h1 class="sr">Chiefs of Angels</h1>
 </section>
-
-<div class="v5-label"><h2>New in</h2><a href="collection.html#new-in">View all</a></div>
-<div class="h-row" id="newin" aria-label="New in, swipe for more"></div>
-
-<a class="v5-band v5-motion" href="collection.html#jackets" aria-label="Outerwear: the final layer. Shop jackets">
-  <video class="vid" autoplay muted loop playsinline preload="auto" poster="img/final-layer-poster.jpg" aria-hidden="true"><source src="media/final-layer.mp4" type="video/mp4"><source src="media/final-layer.webm" type="video/webm"></video>
-  <div class="over-t"><span>Outerwear<em>The final layer.</em></span><span class="go">Shop jackets</span></div>
-</a>
 
 <a class="v5-full" href="collection.html#heart-supplies"><img src="img/cat-newin.jpg" alt="Model in a black sweater with a red heart patch against a brick wall" loading="lazy" style="object-position:62% center"><span>Heart Supplies</span></a>
 <a class="v5-full" href="collection.html#logo-threads"><img src="img/cat-logothreads.jpg" alt="Model in a COA beanie and black logo hoodie against a black backdrop" loading="lazy" style="object-position:center 25%"><span>Logo Threads</span></a>
@@ -58,7 +59,7 @@ const fresh=COA.P.filter(p=>p.isNew).map(p=>p.id);
 const lead=["black-angel-skirt","flatground-bomber-jacket","open-heavens-tank","electric-lamb-leather-bomber"];
 $("#newin").innerHTML=[...new Set([...lead,...fresh])].slice(0,10).map(id=>card(id)).join("");
 
-/* hero: one full-screen picture per swipe */
+/* the two campaign pictures: one full-screen picture per swipe */
 const tr=$("#heroTrack"), slides=[...tr.children], dots=$("#heroDots");
 dots.innerHTML=slides.map((s,i)=>`<button role="tab" aria-label="Picture ${i+1}" aria-selected="${!i}"></button>`).join("");
 const go=i=>tr.scrollTo({left:Math.max(0,Math.min(i,slides.length-1))*tr.clientWidth,behavior:"smooth"});
@@ -68,7 +69,7 @@ dots.addEventListener("click",e=>{ const b=e.target.closest("button"); if(b) go(
 $("#heroPrev").onclick=()=>go(cur()-1); $("#heroNext").onclick=()=>go(cur()+1);
 $("#heroPrev").disabled=true;
 
-/* the final layer: keep the film running; pause it only when off screen, and for people who ask for less motion */
+/* hero film: starts on arrival and keeps running; pauses only when scrolled away, and for people who ask for less motion */
 const vid=document.querySelector(".v5-motion video");
 if(vid){
   const still=matchMedia("(prefers-reduced-motion: reduce)");
@@ -77,6 +78,7 @@ if(vid){
   if("IntersectionObserver" in window) new IntersectionObserver(es=>es.forEach(e=>e.isIntersecting?play():vid.pause()),{threshold:.15}).observe(vid);
   vid.addEventListener("ended",()=>{ vid.currentTime=0; play() });
   document.addEventListener("visibilitychange",()=>{ if(!document.hidden) play() });
+  play();
 }
 })();
 </script>
