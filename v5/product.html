@@ -95,7 +95,7 @@ if(fb) fb.onclick=()=>{
   <ul class="fitlist">${p.sizes.map(s=>`<li><span>${s}</span><span style="color:var(--smoke)">${{XS:"Extra small",S:"Small",M:"Medium",L:"Large",XL:"Extra large"}[s]||s}</span></li>`).join("")}</ul>
   <p class="note">The measurement chart is being produced by Chiefs of Angels and will appear here.</p>
   <p style="margin-top:16px">Between sizes? <a href="contact.html" style="text-decoration:underline;text-underline-offset:3px">Ask the studio</a>.</p>`;
-  $("#fitSheet").classList.add("on"); $("#scrim").classList.add("on"); $("#fitSheet").setAttribute("aria-hidden","false");
+  COA.openPanel($("#fitSheet"));
 };
 $("#fitSheet").addEventListener("click",e=>{ if(e.target.closest("[data-close]")) closeAll() });
 

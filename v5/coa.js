@@ -193,8 +193,27 @@ function add(id,s,q=1){
   saveCart();
     toast(`Added to bag: ${BY[id].n}, ${s}`);
 }
-function openBag(){ $("#drawer").classList.add("on"); $("#scrim").classList.add("on"); $("#drawer").setAttribute("aria-hidden","false"); $("#toast").classList.remove("on") }
-function closeAll(){ document.querySelectorAll(".drawer,.scrim,.mnav,.sheet,.search").forEach(el=>{el.classList.remove("on");el.setAttribute("aria-hidden","true")}); document.body.style.overflow="" }
+/* panels (bag, menu, search, size guide): when one closes, focus goes back to the button that opened it
+   BEFORE the panel is hidden, and closed panels are inert so nothing inside them can take focus */
+const PANELS=".drawer,.mnav,.sheet,.search";
+let opener=null;
+function openPanel(el,focusEl){
+  if(!el) return;
+  const a=document.activeElement; if(a&&a!==document.body&&!a.closest(PANELS)) opener=a;
+  el.inert=false; el.removeAttribute("inert"); el.classList.add("on"); el.setAttribute("aria-hidden","false"); $("#scrim").classList.add("on");
+  const f=focusEl||el.querySelector("[data-close],#closeBag,#closeNav,#closeSearch,button,a,input");
+  if(f) setTimeout(()=>f.focus({preventScroll:true}),60);
+}
+function openBag(){ openPanel($("#drawer"),$("#closeBag")); $("#toast").classList.remove("on") }
+function closeAll(){
+  const panels=[...document.querySelectorAll(PANELS)];
+  const a=document.activeElement;
+  if(a&&panels.some(p=>p.contains(a))){
+    if(opener&&document.contains(opener)&&!opener.closest(PANELS)) opener.focus({preventScroll:true}); else a.blur();
+  }
+  panels.forEach(el=>{ el.classList.remove("on"); el.setAttribute("aria-hidden","true"); el.inert=true });
+  $("#scrim").classList.remove("on"); document.body.style.overflow="";
+}
 function toggleWish(id){ const on=!wish.has(id); on?wish.add(id):wish.delete(id); store.set("coa-wish",[...wish]);
   document.querySelectorAll(`.card[data-id="${id}"] .wish, .wish[data-wid="${id}"]`).forEach(x=>{x.classList.toggle("on",on);x.setAttribute("aria-pressed",on)});
   toast(on?`Saved ${BY[id].n} to your wishlist`:`Removed ${BY[id].n} from your wishlist`,false); listeners.forEach(f=>f()); return on }
@@ -218,14 +237,15 @@ function drawSearch(){
   box.innerHTML=`${r.cols.length||r.pages.length?`<div class="s-links">${r.cols.map(c=>`<a href="${c.u}"><b>${esc(c.t)}</b><span>${c.k}</span></a>`).join("")}${r.pages.map(c=>`<a href="${c.u}"><b>${esc(c.t)}</b><span>${esc(c.k)}</span></a>`).join("")}</div>`:""}
   ${r.prods.length?`<div class="s-head"><span class="eyebrow">${r.prods.length} product${r.prods.length===1?"":"s"}</span>${r.prods.length>8?`<span class="tb-count">Showing 8</span>`:""}</div><div class="s-grid">${r.prods.slice(0,8).map(p=>`<a class="s-item" href="${purl(p.id)}"><img src="${img(p.imgs[0])}" alt=""><span><b>${esc(p.n)}</b>${priceHTML(p)}</span></a>`).join("")}</div>`:""}`;
 }
-function openSearch(){ const s=$("#search"); s.classList.add("on"); s.setAttribute("aria-hidden","false"); $("#scrim").classList.add("on"); drawSearch(); setTimeout(()=>$("#q").focus(),60) }
+function openSearch(){ drawSearch(); openPanel($("#search"),$("#q")) }
 
 function mount(active,opt={}){
   if(opt.over) document.body.classList.add("over");
   document.body.insertAdjacentHTML("afterbegin",sprite+header(active));
   document.body.insertAdjacentHTML("beforeend",footer);
+  document.querySelectorAll(PANELS).forEach(el=>{ if(!el.classList.contains("on")) el.inert=true });
   $("#bagBtn").onclick=openBag; $("#toastView").onclick=openBag; $("#closeBag").onclick=closeAll; $("#scrim").onclick=closeAll;
-  $("#burger").onclick=()=>{ $("#mnav").classList.add("on"); $("#scrim").classList.add("on"); $("#mnav").setAttribute("aria-hidden","false") };
+  $("#burger").onclick=()=>openPanel($("#mnav"),$("#closeNav"));
   $("#closeNav").onclick=closeAll;
   $("#searchBtn").onclick=openSearch; $("#closeSearch").onclick=closeAll;
   $("#q").addEventListener("input",drawSearch);
@@ -281,6 +301,6 @@ const fmt=d=>new Date(d).toLocaleDateString("en-ZA",{weekday:"short",day:"numeri
 /* ---------- shared page bits ---------- */
 const crumbs=(list)=>`<nav class="crumbs" aria-label="Breadcrumb"><a href="index.html">Home</a>${list.map((x,i)=>`<span aria-hidden="true">/</span>${i===list.length-1?`<span aria-current="page">${esc(x[0])}</span>`:`<a href="${x[1]}">${esc(x[0])}</a>`}`).join("")}</nav>`;
 
-window.COA={P,BY,C,SWITCH,TYPES,SIZES,DIARIES,PAGES,R,$,esc,img,priceHTML,card,add,openBag,closeAll,mount,store,wish,toggleWish,purl,curl,addWorkingDays,fmt,ar,crumbs,hashFor,toast,
+window.COA={P,BY,C,SWITCH,TYPES,SIZES,DIARIES,PAGES,R,$,esc,img,priceHTML,card,add,openBag,openPanel,closeAll,mount,store,wish,toggleWish,purl,curl,addWorkingDays,fmt,ar,crumbs,hashFor,toast,
   get cart(){return cart}, setCart(c){cart=c;saveCart()}, saveCart, bagTotals, onChange(f){listeners.push(f)}, POLICY, returnable, payflex, Rc};
 })();
