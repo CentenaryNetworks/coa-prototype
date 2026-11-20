@@ -1,0 +1,84 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="robots" content="noindex, nofollow">
+<title>Chiefs of Angels</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Instrument+Serif:ital@0;1&display=swap">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Archivo:wght@400;500;600&display=swap">
+<link rel="stylesheet" href="coa.css">
+<link rel="preload" as="image" href="img/final-layer-poster.jpg">
+<style>body{margin:0} .v5-hero-vid::after{display:none}</style>
+</head>
+<body>
+<main id="top">
+
+<a class="v5-band v5-motion v5-hero-vid" href="collection.html#jackets" aria-label="Shop jackets">
+  <video class="vid" autoplay muted loop playsinline preload="auto" poster="img/final-layer-poster.jpg" aria-hidden="true"><source src="media/final-layer.mp4" type="video/mp4"><source src="media/final-layer.webm" type="video/webm"></video>
+  <h1 class="sr">Chiefs of Angels</h1>
+</a>
+
+<div class="v5-label"><h2>New in</h2><a href="collection.html#new-in">View all</a></div>
+<div class="h-row" id="newin" aria-label="New in, swipe for more"></div>
+
+<section class="v5-slider v5-mid" aria-label="This season" aria-roledescription="carousel">
+  <div class="track" id="heroTrack">
+    <a class="hs" href="collection.html#loungewear" aria-label="Loungewear, slide 1 of 2"><img src="img/cat-loungewear.jpg" alt="Model in sunglasses and a white Chiefs of Angels graphic tee, black and white photo" style="object-position:58% 4%"><span class="lbl">Loungewear</span></a>
+    <a class="hs" href="collection.html#skool-of-rock" aria-label="Skool of Rock, slide 2 of 2"><img src="img/sor-look-4.jpg" alt="Model in a white Universite tee and a black leather skirt" style="object-position:center 18%"><span class="lbl">Skool of Rock</span></a>
+  </div>
+  <button class="nav-arrow prev" id="heroPrev" aria-label="Previous picture">‹</button>
+  <button class="nav-arrow next" id="heroNext" aria-label="Next picture">›</button>
+  <div class="dots" id="heroDots" role="tablist" aria-label="Choose a picture"></div>
+</section>
+
+<a class="v5-full" href="collection.html#heart-supplies"><img src="img/cat-newin.jpg" alt="Model in a black sweater with a red heart patch against a brick wall" loading="lazy" style="object-position:62% center"><span>Heart Supplies</span></a>
+<a class="v5-full" href="collection.html#accessories"><img src="img/cat-logothreads.jpg" alt="Model in a COA beanie and black hoodie against a black backdrop" loading="lazy" style="object-position:center 25%"><span>Headgear</span></a>
+
+<div class="v5-label"><h2>Diaries</h2><a href="diaries.html">All entries</a></div>
+<div class="h-row journal" aria-label="Diaries, swipe for more">
+  <a href="diary.html#story-beneath-the-sound"><figure><img src="img/diary-01.jpg" alt="" loading="lazy"></figure><p>The story beneath the sound</p><small>Vol. 1 · Roots</small></a>
+  <a href="diary.html#skool-of-rock"><figure><img src="img/sor-look-1.jpg" alt="" loading="lazy" style="filter:none"></figure><p>Youth is an experiment</p><small>Skool of Rock lookbook</small></a>
+  <a href="diary.html#story-beneath-the-sound"><figure><img src="img/diary-07.jpg" alt="" loading="lazy"></figure><p>Rock ’n’ roll isn’t just a genre</p><small>Vol. 1 · Chapter four</small></a>
+  <a href="diary.html#story-beneath-the-sound"><figure><img src="img/diary-02.jpg" alt="" loading="lazy"></figure><p>Before there was rock, there was gospel</p><small>Vol. 1 · Chapter two</small></a>
+  <a href="diary.html#story-beneath-the-sound"><figure><img src="img/diary-05.jpg" alt="" loading="lazy"></figure><p>The Diaries, volume one</p><small>Read the full story</small></a>
+</div>
+<div style="height:96px"></div>
+
+</main>
+<script src="coa-data.js"></script>
+<script src="coa.js"></script>
+<script>
+(function(){
+const {card,mount,$}=COA;
+mount("home",{over:true});
+/* newest first, in the live store's own order */
+$("#newin").innerHTML=COA.P.filter(p=>p.isNew).sort((a,b)=>a.o-b.o).slice(0,12).map(p=>card(p.id)).join("");
+
+/* the two campaign pictures: one full-screen picture per swipe */
+const tr=$("#heroTrack"), slides=[...tr.children], dots=$("#heroDots");
+dots.innerHTML=slides.map((s,i)=>`<button role="tab" aria-label="Picture ${i+1}" aria-selected="${!i}"></button>`).join("");
+const go=i=>tr.scrollTo({left:Math.max(0,Math.min(i,slides.length-1))*tr.clientWidth,behavior:"smooth"});
+const cur=()=>Math.round(tr.scrollLeft/tr.clientWidth);
+tr.addEventListener("scroll",()=>{ const c=cur(); [...dots.children].forEach((d,i)=>d.setAttribute("aria-selected",i===c)); $("#heroPrev").disabled=c===0; $("#heroNext").disabled=c===slides.length-1 },{passive:true});
+dots.addEventListener("click",e=>{ const b=e.target.closest("button"); if(b) go([...dots.children].indexOf(b)) });
+$("#heroPrev").onclick=()=>go(cur()-1); $("#heroNext").onclick=()=>go(cur()+1);
+$("#heroPrev").disabled=true;
+
+/* hero film: starts on arrival and keeps running; pauses only when scrolled away, and for people who ask for less motion */
+const vid=document.querySelector(".v5-motion video");
+if(vid){
+  const still=matchMedia("(prefers-reduced-motion: reduce)");
+  const play=()=>{ if(!still.matches){ const p=vid.play(); if(p&&p.catch) p.catch(()=>{}) } };
+  if(still.matches){ vid.removeAttribute("autoplay"); vid.pause() }
+  if("IntersectionObserver" in window) new IntersectionObserver(es=>es.forEach(e=>e.isIntersecting?play():vid.pause()),{threshold:.15}).observe(vid);
+  vid.addEventListener("ended",()=>{ vid.currentTime=0; play() });
+  document.addEventListener("visibilitychange",()=>{ if(!document.hidden) play() });
+  play();
+}
+})();
+</script>
+</body>
+</html>

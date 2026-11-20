@@ -1,0 +1,12 @@
+/*
+Theme Name: Chiefs of Angels
+Theme URI: https://chiefsofangels.com
+Author: MPL AI (NewMPL Ventures) for Centenary Networks
+Description: Storefront theme for Chiefs of Angels, built from the approved v5 design. WooCommerce handles products, cart, checkout, payments, orders and accounts; this theme only changes how the store looks.
+Version: 1.0.0
+Requires at least: 6.5
+Requires PHP: 8.1
+WC requires at least: 9.0
+Text Domain: coa
+*/
+/* All styles live in assets/coa.css (the approved v5 design) and assets/wc.css (WooCommerce pages). */

@@ -1,0 +1,377 @@
+/* Chiefs of Angels theme: shared catalogue logic, header/footer, search, bag, wishlist.
+   Product data (window.COA_DATA) and addresses (window.COA_CTX) come from WooCommerce via the theme.
+   The bag is the real WooCommerce cart, through the Store API. */
+(function(){
+const CTX=window.COA_CTX||{links:{},cats:{}};
+const L=CTX.links||{};
+const SIZES=["XS","S","M","L","XL"];
+const P=(window.COA_DATA||[]).map(p=>{
+  if(p.one) p.sizes=["One size"];
+  p.oos=p.oos||[]; p.vars=p.vars||{};
+  if(p.was){ p.tag=`Sale −${Math.round((1-p.p/p.was)*100)}%`; p.sale=1 }
+  else if(p.o<4) p.tag="Just landed";
+  if(!p.l) p.l=p.d.split(". ")[0];
+  return p;
+});
+const BY=Object.fromEntries(P.map(p=>[p.id,p]));
+
+const TYPES={jackets:"Jackets",sweaters:"Sweaters",tees:"Tees & tanks",shirts:"Shirts",tops:"Tops",skirts:"Skirts",dresses:"Dresses",bottoms:"Pants & shorts",denim:"Denim",headgear:"Headgear"};
+const C={
+ "shop":{t:"Shop all",k:"Everything",img:"cat-newin",d:"Every Chiefs of Angels piece in one place. Classic clothing, always with a twist, made to complement the timeless leather jacket.",f:()=>true},
+ "new-in":{t:"New In",k:"Latest pieces",img:"cat-newin",d:"Everything new from the studio, newest first. Most pieces are made to order.",f:p=>p.isNew},
+ "sale":{t:"Winter Sale ’26",k:"Sale",img:"cat-logothreads",pos:"center 25%",d:"Logo Threads essentials at 30% off while the sale runs.",f:p=>p.cols.includes("sale"),q:"Style starts with the basics."},
+ "loungewear":{t:"Loungewear",k:"Category",img:"cat-loungewear",d:"Tees, tanks, shirts, skirts and sweats, hand distressed and finished one at a time.",f:p=>["tees","tops","shirts","skirts","bottoms","dresses"].includes(p.type)},
+ "outerwear":{t:"Outerwear",k:"Category",img:"cat-jackets",d:"Designed to be more than just outerwear. This is the final layer, built to be worn, lived in, and shaped by the journey of the wearer.",f:p=>["jackets","sweaters"].includes(p.type)},
+ "jackets":{t:"Jackets",k:"Outerwear",img:"cat-jackets",d:"The leather jacket is the label’s core style. The final layer, built to be worn, lived in, and shaped by the journey of the wearer.",f:p=>p.type==="jackets",parent:"outerwear"},
+ "accessories":{t:"Accessories",k:"Category",img:"cat-skirts",pos:"center 15%",d:"Rooted in spirituality and shaped by the DIY spirit of rock ’n’ roll, our accessories are symbols of individuality and self-expression.",f:p=>p.type==="headgear"},
+ "skool-of-rock":{t:"Skool of Rock",k:"Collection",img:"sor-look-2",pos:"center 35%",d:"Our latest summer collection looks at youth as a practice. An ongoing experiment in identity, expression and figuring things out as you go.",f:p=>p.cols.includes("skool-of-rock"),q:"Youth is an experiment. Try something new. Get it wrong. Try again.",story:"skool-of-rock"},
+ "new-jozi":{t:"New Jozi",k:"Collection",word:"New Jozi City",d:"The New Jozi collection brings together expression and identity. A tribute to the city that never sleeps.",f:p=>p.cols.includes("new-jozi"),q:"Designed for the disruptors."},
+ "heart-supplies":{t:"Heart Supplies",k:"Collection",img:"cat-heart",d:"The heart symbolises the expression of the things that move us from within, expressed outwardly.",f:p=>p.cols.includes("heart-supplies"),q:"The things that move us from within, expressed outwardly."},
+ "logo-threads":{t:"Logo Threads",k:"Collection",img:"cat-logothreads",pos:"center 25%",d:"Designed for those who believe that style starts with the basics. Clean, versatile garments that carry the symbol that defines the brand.",f:p=>p.cols.includes("logo-threads"),q:"Style starts with the basics."},
+ "denim-edit":{t:"Denim Edit",k:"Collection",word:"Denim Edit",d:"Classic denim reworked with patches, embroidery, leather panelling and stars. No two finishes are quite the same.",f:p=>p.cols.includes("denim-edit"),q:"Each patch contributes to the story of the garment."},
+ "regenerated-vintage":{t:"Regenerated Vintage",k:"Collection",word:"Regenerated",d:"Up-cycled, recycled and repurposed pieces, given a second life with a rock ’n’ roll sensibility.",f:p=>p.cols.includes("regenerated-vintage")}
+};
+/* wire the design's collections to the store's real categories */
+const CAT_OF={"heart-supplies":["heart-supplies-collections","heart-supplies"],"accessories":["accessories","accessories-2","headgear"]};
+Object.entries(C).forEach(([k,c])=>{
+  const slugs=CAT_OF[k]||[k], real=slugs.find(x=>CTX.cats&&CTX.cats[x]);
+  if(k==="shop"){ c.url=L.shop; return }
+  if(k==="sale"){ c.url=L.shop; return }
+  if(real){ c.url=CTX.cats[real].url; c.f=p=>slugs.some(x=>(p.cats||[]).includes(x)) }
+});
+/* any other store category gets a plain collection page */
+Object.entries(CTX.cats||{}).forEach(([slug,cat])=>{
+  if(C[slug]||Object.values(CAT_OF).some(a=>a.includes(slug))) return;
+  C[slug]={t:cat.t,k:"Category",d:cat.d||"",url:cat.url,f:p=>(p.cats||[]).includes(slug)};
+});
+if(CTX.q){ C.search={t:`Search: ${CTX.q}`,k:"Search",d:"",url:L.shop,f:p=>{const r=searchAll(CTX.q);return !!(r&&r.prods.includes(p))}} }
+/* a collection only appears in menus while the live store has pieces in it (Logo Threads, Sale and Regenerated Vintage are empty as of 12 Nov 2026) */
+const has=slug=>!!C[slug]&&P.some(C[slug].f);
+const SWITCH=["shop","new-in","skool-of-rock","new-jozi","heart-supplies","denim-edit","logo-threads","sale","outerwear","loungewear","accessories"].filter(has);
+
+/* Diaries entries come from the live site's COA Diaries pages */
+const DIARIES=[
+ {id:"skool-of-rock",t:"Skool of Rock",k:"Lookbook · October 2026",cover:"sor-look-1",col:"skool-of-rock",
+  dek:"Our latest summer collection looks at youth as a practice. An ongoing experiment in identity, expression and figuring things out as you go."},
+ {id:"story-beneath-the-sound",t:"The Story Beneath the Sound",k:"Diaries Vol. 1 · Roots",cover:"diary-01",col:"shop",
+  prods:["rock-stars-never-die-tee","thunderstruck-tee","bowie-tee","rolling-stones-us-tour-tee","stones-love-coa-tee","rock-stars-never-die-sweater","rolling-stones-flannel","multi-band-denim-shirt"],
+  dek:"Six chapters on where rock ’n’ roll came from: gospel, the blues, the guitar, and the feeling underneath it all."}
+];
+/* Diaries only link to pieces still on sale */
+DIARIES.forEach(d=>{ if(d.prods) d.prods=d.prods.filter(id=>BY[id]) });
+const PAGES=[
+ {t:"About us",u:"about.html",k:"Rock ’n’ roll history, spirituality, sustainability"},
+ {t:"Services",u:"about.html#services",k:"What we make and how"},
+ {t:"Contact us",u:"contact.html",k:"Victoria Yards showroom, phone and email"},
+ {t:"FAQ",u:"faq.html",k:"Orders, sizing, made to order"},
+ {t:"COA Diaries",u:"diaries.html",k:"Stories and lookbooks"},
+ {t:"My account",u:"account.html",k:"Orders, addresses, details"},
+ {t:"Wishlist",u:"wishlist.html",k:"Pieces you saved"}
+];
+
+const R=n=>"R"+Math.round(n).toLocaleString("en-ZA").replace(/[\s  ]/g,",");
+const $=s=>document.querySelector(s);
+const esc=s=>String(s??"").replace(/[&<>"]/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;"}[c]));
+const store={get(k,d){try{const v=localStorage.getItem(k);return v?JSON.parse(v):d}catch(e){return d}},set(k,v){try{localStorage.setItem(k,JSON.stringify(v))}catch(e){}}};
+const purl=id=>(BY[id]&&BY[id].url)||L.shop, curl=s=>(C[s]&&C[s].url)||L.shop;
+const li=(slug,label)=>has(slug)?`<li><a href="${curl(slug)}">${label}</a></li>`:"";
+const img=(n)=>/^(https?:)?\/\//.test(n)||String(n).startsWith("/")?n:`${CTX.theme}/img/${n}.jpg`;
+/* the approved pages link to each other as prototype files; send each link to its real address */
+function realHref(h){
+  if(!h||/^(https?:|mailto:|tel:|#|javascript:)/i.test(h)) return null;
+  const m=h.match(/^([a-z0-9-]+)\.html(?:#(.*))?$/i); if(!m) return null;
+  const f=m[1], x=m[2]||"";
+  switch(f){
+    case "index": return CTX.home;
+    case "collection": return curl(x||"shop");
+    case "product": return purl(x);
+    case "diaries": return L.diaries;
+    case "diary": return x?L.diaries+x+"/":L.diaries;
+    case "about": return L.about+(x?"#"+x:"");
+    case "contact": return L.contact+(x?"#"+x:"");
+    case "faq": return L.faq+(x?"#"+x:"");
+    case "account": return x==="orders"?L.orders:L.account;
+    case "cart": return L.cart;
+    case "checkout": return L.checkout;
+    case "wishlist": return L.wishlist;
+    case "404": return CTX.home;
+  }
+  return null;
+}
+function fixLinks(root){ (root.querySelectorAll?root:document).querySelectorAll('a[href$=".html"],a[href*=".html#"]').forEach(a=>{ const r=realHref(a.getAttribute("href")); if(r) a.setAttribute("href",r) }); if(root.matches&&root.matches('a[href*=".html"]')){ const r=realHref(root.getAttribute("href")); if(r) root.setAttribute("href",r) } }
+const priceHTML=p=>p.was?`<span class="price"><s>${R(p.was)}</s> <span class="now">${R(p.p)}</span></span>`:`<span class="price">${R(p.p)}</span>`;
+
+/* ---------- product card (v5: image, name, price, nothing else) ---------- */
+const wish=new Set(store.get("coa-wish",[]).filter(id=>BY[id]));
+function card(id,opt={}){
+  const p=BY[id]; if(!p) return "";
+  const alt=p.imgs[1]?`<img class="alt" src="${img(p.imgs[1])}" alt="" loading="lazy">`:"";
+  return `<article class="card" data-id="${p.id}">
+    <div class="ph">
+      <a class="ph-link" href="${purl(p.id)}" aria-label="${esc(p.n)}"></a>
+      <img class="${p.imgs[1]?"has-alt":""}" src="${img(p.imgs[0])}" alt="${esc(p.n)}" loading="${opt.eager?"eager":"lazy"}">${alt}
+      <button class="wish${wish.has(p.id)?" on":""}" aria-label="Save ${esc(p.n)}" aria-pressed="${wish.has(p.id)}"><svg><use href="#i-heart"/></svg></button>
+    </div>
+    <div class="meta"><h3><a href="${purl(p.id)}">${esc(p.n)}</a></h3>${priceHTML(p)}</div>
+  </article>`;
+}
+
+/* ---------- chrome ---------- */
+const sprite=`<svg width="0" height="0" style="position:absolute" aria-hidden="true">
+  <symbol id="i-arrow" viewBox="0 0 24 24"><path d="M4 12h15M13 6l6 6-6 6"/></symbol>
+  <symbol id="i-left" viewBox="0 0 24 24"><path d="M20 12H5M11 6l-6 6 6 6"/></symbol>
+  <symbol id="i-search" viewBox="0 0 24 24"><circle cx="11" cy="11" r="6.5"/><path d="M16 16l4.5 4.5"/></symbol>
+  <symbol id="i-user" viewBox="0 0 24 24"><circle cx="12" cy="8.5" r="3.8"/><path d="M4.5 20.5c1.2-3.8 4-5.6 7.5-5.6s6.3 1.8 7.5 5.6"/></symbol>
+  <symbol id="i-bag" viewBox="0 0 24 24"><path d="M5 8h14l-1 12.5H6L5 8z"/><path d="M9 8V6.5a3 3 0 0 1 6 0V8"/></symbol>
+  <symbol id="i-heart" viewBox="0 0 24 24"><path d="M12 20s-7.5-4.6-7.5-10.2A4.3 4.3 0 0 1 12 7.3a4.3 4.3 0 0 1 7.5 2.5C19.5 15.4 12 20 12 20z"/></symbol>
+  <symbol id="i-menu" viewBox="0 0 24 24"><path d="M3.5 7h17M3.5 12h17M3.5 17h11"/></symbol>
+  <symbol id="i-x" viewBox="0 0 24 24"><path d="M6 6l12 12M18 6L6 18"/></symbol>
+  <symbol id="i-star" viewBox="0 0 24 24"><path d="M12 2.5l2.6 6.6 7 .5-5.4 4.5 1.7 6.9L12 17.2 6.1 21l1.7-6.9L2.4 9.6l7-.5z"/></symbol>
+  <symbol id="i-play" viewBox="0 0 24 24"><path d="M6 4l14 8-14 8z"/></symbol>
+  <symbol id="i-needle" viewBox="0 0 24 24"><path d="M19.5 4.5L6 18M15 4l5 5M4 20l2-2"/><circle cx="18.5" cy="5.5" r="1"/></symbol>
+  <symbol id="i-check" viewBox="0 0 24 24"><path d="M4.5 12.5l5 5 10-11"/></symbol>
+  <symbol id="i-pin" viewBox="0 0 24 24"><path d="M12 21s-6.5-6.2-6.5-11a6.5 6.5 0 0 1 13 0c0 4.8-6.5 11-6.5 11z"/><circle cx="12" cy="10" r="2.3"/></symbol>
+  <symbol id="i-phone" viewBox="0 0 24 24"><path d="M6.5 3.5h3l1.5 4.5-2 1.5a11 11 0 0 0 5.5 5.5l1.5-2 4.5 1.5v3a2 2 0 0 1-2 2A16.5 16.5 0 0 1 4.5 5.5a2 2 0 0 1 2-2z"/></symbol>
+  <symbol id="i-ig" viewBox="0 0 24 24"><rect x="3.5" y="3.5" width="17" height="17" rx="4.5"/><circle cx="12" cy="12" r="4"/><circle cx="17.2" cy="6.8" r="1.1" fill="currentColor" stroke="none"/></symbol>
+  <symbol id="i-fb" viewBox="0 0 24 24"><path d="M14.2 21v-7.6h2.6l.4-3h-3V8.5c0-.9.3-1.5 1.5-1.5h1.6V4.3a21 21 0 0 0-2.3-.1c-2.3 0-3.9 1.4-3.9 4v2.2H8.5v3h2.6V21z" fill="currentColor" stroke="none"/></symbol>
+  <symbol id="i-mail" viewBox="0 0 24 24"><rect x="3" y="5.5" width="18" height="13"/><path d="M3.5 6l8.5 7 8.5-7"/></symbol>
+</svg>`;
+const social=(cls="")=>`<div class="social ${cls}"><a href="https://www.instagram.com/chiefsofangels/" target="_blank" rel="noopener" aria-label="Chiefs of Angels on Instagram (opens in a new tab)"><svg><use href="#i-ig"/></svg><span>Instagram</span></a><a href="https://www.facebook.com/share/1EuqLNiwb1/" target="_blank" rel="noopener" aria-label="Chiefs of Angels on Facebook (opens in a new tab)"><svg><use href="#i-fb"/></svg><span>Facebook</span></a></div>`;
+const ar=`<svg width="14" height="14" style="stroke:currentColor;fill:none;stroke-width:1.8;flex:none"><use href="#i-arrow"/></svg>`;
+function header(active){
+  const a=k=>active===k?' class="on" aria-current="page"':"";
+  return `<a class="skip" href="#top">Skip to content</a>
+<header class="hdr" id="hdr"><div class="wrap">
+  <ul class="nav" aria-label="Shop">
+    <li><button aria-haspopup="true"${active==="shop"?' class="on"':""}>Shop</button>
+      <div class="mega"><div class="wrap">
+        <ul>${li("new-in","New in")}${li("shop","All")}${li("jackets","Jackets")}${li("outerwear","Outerwear")}${li("loungewear","Loungewear")}${li("accessories","Headgear")}${li("sale","Sale")}</ul>
+        <ul>${li("skool-of-rock","Skool of Rock")}${li("new-jozi","New Jozi")}${li("heart-supplies","Heart Supplies")}${li("denim-edit","Denim Edit")}${li("logo-threads","Logo Threads")}</ul>
+        <figure><img src="${img("home-slide-3")}" alt="" loading="lazy"><figcaption>The final layer</figcaption></figure>
+      </div></div></li>
+    <li><a href="diaries.html"${a("diaries")}>Diaries</a></li>
+    <li><a href="about.html"${a("about")}>About</a></li>
+  </ul>
+  <button class="burger" id="burger" aria-label="Open menu">Menu</button>
+  <a class="logo" href="${CTX.home}" aria-label="Chiefs of Angels home"><img src="${CTX.theme}/img/logo.png" alt="Chiefs of Angels"></a>
+  <div class="tools">
+    <button id="searchBtn" aria-label="Search">Search</button>
+    <a class="hide-s" href="account.html">Account</a>
+    <button class="bag" id="bagBtn" aria-label="Open bag">Bag <span id="bagCount">0</span></button>
+  </div>
+</div></header>`;
+}
+const footer=`<footer class="foot"><div class="wrap">
+  <div class="foot-grid">
+    <form id="joinForm" novalidate><h4>Newsletter</h4><input type="text" name="website" tabindex="-1" autocomplete="off" aria-hidden="true" style="position:absolute;left:-9999px"><label class="sr" for="email">Email address</label><div class="field"><input id="email" type="email" placeholder="Email address" autocomplete="email"><button type="submit">Subscribe</button></div><div class="form-note" id="joinNote" aria-live="polite"></div></form>
+    <div><h4>Client services</h4><ul><li><a href="faq.html#delivery">Delivery &amp; exchanges</a></li><li><a href="faq.html">FAQ</a></li><li><a href="contact.html">Contact</a></li><li><a href="account.html">Account</a></li></ul></div>
+    <div><h4>The house</h4><ul><li><a href="about.html">About</a></li><li><a href="diaries.html">Diaries</a></li><li><a href="contact.html#showroom">Stores</a></li></ul></div>
+    <div><h4>Follow</h4>${social("foot-social")}</div>
+  </div>
+  <div class="legal"><span>© Chiefs of Angels ${new Date().getFullYear()}</span><span>Prices include VAT · Secure payment with PayFast or PayFlex</span></div>
+</div></footer>
+<div class="scrim" id="scrim"></div>
+<aside class="drawer" id="drawer" aria-label="Shopping bag" aria-hidden="true">
+  <header><h2>Bag</h2><button class="txt-btn" id="closeBag" aria-label="Close bag">Close</button></header>
+  <div class="items" id="items"></div>
+  <footer class="sum">
+    <small id="shipMsg"></small>
+    <div class="row"><span>Subtotal</span><span class="price" id="subtotal">R0</span></div>
+    <small>Shipping is added at checkout. Made-to-order pieces ship within 5–7 working days.</small>
+    <div style="display:grid;grid-template-columns:1fr 1fr;gap:8px"><a class="btn" href="cart.html" style="justify-content:center">View bag</a><a class="btn dark" href="checkout.html" style="justify-content:center">Checkout</a></div>
+  </footer>
+</aside>
+<nav class="mnav" id="mnav" aria-label="Menu" aria-hidden="true">
+  <div style="display:flex;justify-content:flex-end;margin-bottom:18px"><button class="txt-btn" id="closeNav" aria-label="Close menu">Close</button></div>
+  <a href="${curl("new-in")}">New in</a>
+  <details><summary>Shop</summary><ul>${li("shop","All")}${li("jackets","Jackets")}${li("outerwear","Outerwear")}${li("loungewear","Loungewear")}${li("accessories","Headgear")}${li("sale","Sale")}</ul></details>
+  <details><summary>Collections</summary><ul>${li("skool-of-rock","Skool of Rock")}${li("new-jozi","New Jozi")}${li("heart-supplies","Heart Supplies")}${li("denim-edit","Denim Edit")}${li("logo-threads","Logo Threads")}</ul></details>
+  <a href="diaries.html">Diaries</a>
+  <a href="about.html">About</a>
+  <a href="account.html">Account</a>
+  <a href="wishlist.html">Wishlist</a>
+  <a href="contact.html">Contact</a>
+  ${social("menu-social")}
+</nav>
+<div class="search" id="search" role="dialog" aria-label="Search" aria-hidden="true">
+  <div class="wrap">
+    <div class="s-bar"><label class="sr" for="q">Search the store</label><input id="q" type="search" placeholder="Search" autocomplete="off"><button class="txt-btn" id="closeSearch" aria-label="Close search">Close</button></div>
+    <div class="s-res" id="sres"></div>
+  </div>
+</div>
+<div class="toast" id="toast" role="status" aria-live="polite"><span id="toastMsg">Added to bag</span><button id="toastView">View bag</button></div>`;
+
+/* ---------- bag: the real WooCommerce cart, through the Store API ---------- */
+/* Store policy, confirmed by Chiefs of Angels (21 Oct 2026) */
+const POLICY={
+  courier:"The Courier Guy",
+  returnDays:14,
+  pay:["PayFast","PayFlex"],
+  collect:"Melrose flagship store"
+};
+/* sale items, discounted merchandise and headgear can't be returned or exchanged */
+const returnable=p=>!p.was&&!p.sale&&p.type!=="headgear";
+/* PayFlex: 4 interest-free instalments over 6 weeks */
+const Rc=n=>{const v=Math.round(n*100)/100; return Number.isInteger(v)?R(v):"R"+v.toLocaleString("en-ZA",{minimumFractionDigits:2,maximumFractionDigits:2}).replace(/[\s\u00a0\u202f]/g,",")};
+const payflex=total=>`or 4 interest-free payments of <b>${Rc(total/4)}</b> with PayFlex`;
+const SHORT={"extra small":"XS","small":"S","medium":"M","large":"L","extra large":"XL"};
+let wc=null, nonce=CTX.nonce||"", busy=false;
+const money=(v,t)=>(+v||0)/Math.pow(10,(t&&t.currency_minor_unit)||2);
+async function api(path,body){
+  const r=await fetch(`${CTX.rest}wc/store/v1/${path}`,{method:body?"POST":"GET",credentials:"same-origin",headers:{"Content-Type":"application/json",...(nonce?{"Nonce":nonce}:{})},body:body?JSON.stringify(body):undefined});
+  const n=r.headers.get("Nonce"); if(n) nonce=n;
+  const j=await r.json().catch(()=>({}));
+  if(!r.ok) throw new Error((j&&j.message?String(j.message).replace(/<[^>]+>/g,""):"")||"Something went wrong. Please try again.");
+  return j;
+}
+/* the bag as the design's pages expect it: [{key,id,s,q,line}] */
+let cart=[];
+function fromWc(c){
+  wc=c;
+  cart=(c.items||[]).map(it=>{
+    const p=P.find(x=>x.wid===it.id||x.wid===it.parent||Object.values(x.vars||{}).includes(it.id));
+    const v=(it.variation||[])[0]; const s=v?(SHORT[String(v.value).toLowerCase()]||v.value):"One size";
+    return {key:it.key,id:p?p.id:String(it.id),s,q:it.quantity,line:money(it.totals.line_total,it.totals)+money(it.totals.line_total_tax,it.totals),name:it.name,img:it.images&&it.images[0]?it.images[0].thumbnail:"",url:it.permalink};
+  });
+}
+const bagTotals=()=>{ const t=wc&&wc.totals; return {count:wc?wc.items_count:0, sub:t?money(t.total_items,t)+money(t.total_items_tax,t):0} };
+const listeners=[];
+function saveCart(){ render(); listeners.forEach(f=>f()) }
+function render(){
+  const {count,sub}=bagTotals();
+  const b=$("#bagCount"); if(!b) return;
+  b.textContent=count?`(${count})`:""; b.classList.toggle("on",count>0);
+  $("#subtotal").textContent=Rc(sub);
+  $("#shipMsg").innerHTML=!count?"Add a few pieces to see delivery options.":payflex(sub);
+  $("#items").innerHTML=!cart.length?`<div class="empty"><span class="story">Your bag is empty.</span><a href="${curl("new-in")}" style="text-decoration:underline;text-underline-offset:3px">Start with something new in.</a></div>`:
+    cart.map((c,i)=>{const p=BY[c.id]; const u=p?p.url:c.url, im=p?img(p.imgs[0]):c.img, n=p?p.n:c.name;
+      return `<div class="item"><a href="${u}"><img src="${im}" alt=""></a><div><h4><a href="${u}">${esc(n)}</a></h4><small>${c.s==="One size"?"One size":"Size "+esc(c.s)}${p&&p.mto?" · made to order":""}</small><div class="qty"><button data-q="-1" data-i="${i}" aria-label="Decrease quantity">−</button><span>${c.q}</span><button data-q="1" data-i="${i}" aria-label="Increase quantity">+</button></div><button class="rm" data-rm="${i}">Remove</button></div><span class="price">${Rc(c.line)}</span></div>`}).join("");
+}
+async function refresh(){ try{ fromWc(await api("cart")); saveCart() }catch(e){} }
+async function change(path,body,msg){
+  if(busy) return; busy=true; $("#drawer")&&$("#drawer").classList.add("busy");
+  try{ fromWc(await api(path,body)); saveCart(); if(msg) toast(msg,!CTX.isWc); if(CTX.isWc) setTimeout(()=>location.reload(),400) }
+  catch(e){ toast(e.message,false) }
+  finally{ busy=false; $("#drawer")&&$("#drawer").classList.remove("busy") }
+}
+let tt;
+function toast(msg,btn=true){ $("#toastMsg").textContent=msg; $("#toastView").hidden=!btn; $("#toast").classList.add("on"); clearTimeout(tt); tt=setTimeout(()=>$("#toast").classList.remove("on"),3200) }
+function add(id,s,q=1){
+  const p=BY[id]; if(!p) return Promise.resolve(false);
+  const vid=(p.vars&&p.vars[s])||p.wid;
+  if(p.oos.includes(s)){ toast(`${p.n} in ${s} is sold out.`,false); return Promise.resolve(false) }
+  return change("cart/add-item",{id:vid,quantity:q},`Added to bag: ${p.n}${s&&s!=="One size"?", "+s:""}`).then(()=>true);
+}
+/* panels (bag, menu, search, size guide): when one closes, focus goes back to the button that opened it
+   BEFORE the panel is hidden, and closed panels are inert so nothing inside them can take focus */
+const PANELS=".drawer,.mnav,.sheet,.search";
+let opener=null;
+function openPanel(el,focusEl){
+  if(!el) return;
+  const a=document.activeElement; if(a&&a!==document.body&&!a.closest(PANELS)) opener=a;
+  el.inert=false; el.removeAttribute("inert"); el.classList.add("on"); el.setAttribute("aria-hidden","false"); $("#scrim").classList.add("on");
+  const f=focusEl||el.querySelector("[data-close],#closeBag,#closeNav,#closeSearch,button,a,input");
+  if(f) setTimeout(()=>f.focus({preventScroll:true}),60);
+}
+function openBag(){ openPanel($("#drawer"),$("#closeBag")); $("#toast").classList.remove("on") }
+function closeAll(){
+  const panels=[...document.querySelectorAll(PANELS)];
+  const a=document.activeElement;
+  if(a&&panels.some(p=>p.contains(a))){
+    if(opener&&document.contains(opener)&&!opener.closest(PANELS)) opener.focus({preventScroll:true}); else a.blur();
+  }
+  panels.forEach(el=>{ el.classList.remove("on"); el.setAttribute("aria-hidden","true"); el.inert=true });
+  $("#scrim").classList.remove("on"); document.body.style.overflow="";
+}
+function toggleWish(id){ const on=!wish.has(id); on?wish.add(id):wish.delete(id); store.set("coa-wish",[...wish]);
+  document.querySelectorAll(`.card[data-id="${id}"] .wish, .wish[data-wid="${id}"]`).forEach(x=>{x.classList.toggle("on",on);x.setAttribute("aria-pressed",on)});
+  toast(on?`Saved ${BY[id].n} to your wishlist`:`Removed ${BY[id].n} from your wishlist`,false); listeners.forEach(f=>f()); return on }
+
+/* ---------- search ---------- */
+const norm=s=>String(s).toLowerCase().normalize("NFD").replace(/[̀-ͯ]/g,"").replace(/[’']/g,"");
+function searchAll(q){
+  const t=norm(q).trim().split(/\s+/).filter(Boolean); if(!t.length) return null;
+  const hit=s=>t.every(w=>norm(s).includes(w));
+  const prods=P.filter(p=>hit([p.n,p.l,TYPES[p.type],p.cols.map(c=>C[c]?.t).join(" "),p.det.join(" ")].join(" ")))
+    .sort((a,b)=>(norm(b.n).includes(t[0])?1:0)-(norm(a.n).includes(t[0])?1:0)||a.o-b.o);
+  const cols=Object.entries(C).filter(([k,c])=>hit(c.t+" "+c.k)).map(([k,c])=>({t:c.t,u:curl(k),k:`${P.filter(c.f).length} pieces`}));
+  const pages=[...PAGES,...DIARIES.map(d=>({t:d.t,u:"diary.html#"+d.id,k:d.k}))].filter(p=>hit(p.t+" "+p.k));
+  return {prods,cols,pages};
+}
+function drawSearch(){
+  const q=$("#q").value, r=searchAll(q), box=$("#sres");
+  if(!r){ box.innerHTML=`<div class="s-sug">${["Leather jacket","Skool of Rock","Denim","Caps","Rock Stars Never Die","Heart"].map(s=>`<button class="chip" data-s="${s}">${s}</button>`).join("")}</div>`; return }
+  const n=r.prods.length+r.cols.length+r.pages.length;
+  if(!n){ box.innerHTML=`<p class="s-none"><span class="story">Nothing matches “${esc(q)}”.</span> Try a type like “jacket” or a collection like “New Jozi”.</p>`; return }
+  box.innerHTML=`${r.cols.length||r.pages.length?`<div class="s-links">${r.cols.map(c=>`<a href="${c.u}"><b>${esc(c.t)}</b><span>${c.k}</span></a>`).join("")}${r.pages.map(c=>`<a href="${c.u}"><b>${esc(c.t)}</b><span>${esc(c.k)}</span></a>`).join("")}</div>`:""}
+  ${r.prods.length?`<div class="s-head"><span class="eyebrow">${r.prods.length} product${r.prods.length===1?"":"s"}</span>${r.prods.length>8?`<span class="tb-count">Showing 8</span>`:""}</div><div class="s-grid">${r.prods.slice(0,8).map(p=>`<a class="s-item" href="${purl(p.id)}"><img src="${img(p.imgs[0])}" alt=""><span><b>${esc(p.n)}</b>${priceHTML(p)}</span></a>`).join("")}</div>`:""}`;
+}
+function openSearch(){ drawSearch(); openPanel($("#search"),$("#q")) }
+
+function mount(active,opt={}){
+  if(opt.over) document.body.classList.add("over");
+  document.body.insertAdjacentHTML("afterbegin",sprite+header(active));
+  document.body.insertAdjacentHTML("beforeend",footer);
+  document.querySelectorAll(PANELS).forEach(el=>{ if(!el.classList.contains("on")) el.inert=true });
+  $("#bagBtn").onclick=openBag; $("#toastView").onclick=openBag; $("#closeBag").onclick=closeAll; $("#scrim").onclick=closeAll;
+  $("#burger").onclick=()=>openPanel($("#mnav"),$("#closeNav"));
+  $("#closeNav").onclick=closeAll;
+  $("#searchBtn").onclick=openSearch; $("#closeSearch").onclick=closeAll;
+  $("#q").addEventListener("input",drawSearch);
+  $("#q").addEventListener("keydown",e=>{ if(e.key==="Enter"){ const a=$("#sres a"); if(a) location.href=a.getAttribute("href") } });
+  $("#sres").addEventListener("click",e=>{ const c=e.target.closest("[data-s]"); if(c){ $("#q").value=c.dataset.s; drawSearch(); $("#q").focus() } else if(e.target.closest("a")) closeAll() });
+  $("#mnav").addEventListener("click",e=>{ if(e.target.closest("a")) closeAll() });
+  document.addEventListener("keydown",e=>{ if(e.key==="Escape") closeAll(); if(e.key==="/" && !/input|textarea|select/i.test(document.activeElement.tagName)){ e.preventDefault(); openSearch() } });
+  $("#items").addEventListener("click",e=>{
+    const q=e.target.closest("[data-q]"), r=e.target.closest("[data-rm]");
+    if(q){ const c=cart[+q.dataset.i]; const n=c.q+ +q.dataset.q; n<1?change("cart/remove-item",{key:c.key}):change("cart/update-item",{key:c.key,quantity:n}) }
+    if(r){ const c=cart[+r.dataset.rm]; change("cart/remove-item",{key:c.key},"Removed from your bag") }
+  });
+  document.addEventListener("click",e=>{
+    const s=e.target.closest(".card .sizes button"); if(s){ add(s.closest(".card").dataset.id,s.dataset.size); return }
+    const w=e.target.closest(".wish[data-wid], .card .wish");
+    if(w){ toggleWish(w.dataset.wid||w.closest(".card").dataset.id) }
+  });
+  // the approved pages link to each other by file name; point every link at its real address, now and as pages draw
+  fixLinks(document);
+  new MutationObserver(ms=>ms.forEach(m=>m.addedNodes.forEach(n=>{ if(n.nodeType===1) fixLinks(n) }))).observe(document.body,{childList:true,subtree:true});
+  document.addEventListener("click",e=>{ const a=e.target.closest('a[href*=".html"]'); if(!a) return; const r=realHref(a.getAttribute("href")); if(r){ e.preventDefault(); location.href=r } },true);
+  const hdr=$("#hdr"), onS=()=>hdr.classList.toggle("scrolled",scrollY>8); addEventListener("scroll",onS,{passive:true}); onS();
+  $("#joinForm").addEventListener("submit",async e=>{
+    e.preventDefault(); const v=$("#email").value.trim(), n=$("#joinNote");
+    if(!/^[^@\s]+@[^@\s]+\.[^@\s]+$/.test(v)){ n.className="form-note"; n.textContent="Enter an email address like name@example.com."; return }
+    n.className="form-note"; n.textContent="Signing you up…";
+    try{ await post("coa_join",{email:v,website:e.target.website.value}); n.className="form-note ok"; n.textContent="You’re on the list."; $("#email").value="" }
+    catch(err){ n.className="form-note"; n.textContent=err.message }
+  });
+  // --chrome = height of the announcement bar + header, so heroes can fill exactly the first screen
+  const setChrome=()=>{ const a=document.querySelector(".announce"), h=$("#hdr"); document.documentElement.style.setProperty("--chrome",((a?a.offsetHeight:0)+(h?h.offsetHeight:0))+"px") };
+  setChrome(); addEventListener("resize",setChrome); if(document.fonts) document.fonts.ready.then(setChrome);
+  render(); refresh();
+}
+/* the #hash of this page, falling back to the last link clicked to it */
+function hashFor(file){
+  if(CTX.slug){ if(file==="collection.html"){ const k=Object.keys(CAT_OF).find(k=>CAT_OF[k].includes(CTX.slug)); return CTX.q?"search":(k||CTX.slug) } return CTX.slug }
+  return (location.hash||"").replace("#","");
+}
+/* send a form to the theme (contact, newsletter) */
+async function post(action,data){
+  const f=new FormData(); f.append("action",action); f.append("nonce",CTX.formNonce||""); Object.entries(data).forEach(([k,v])=>f.append(k,v??""));
+  const r=await fetch(CTX.ajax,{method:"POST",body:f,credentials:"same-origin"}); const j=await r.json().catch(()=>({}));
+  if(!r.ok||!j.success) throw new Error((j.data&&j.data.msg)||"That didn’t go through. Please try again.");
+  return j.data;
+}
+
+/* ---------- working-day dispatch estimate (SA public holidays 2026–27) ---------- */
+const HOL=new Set(["2026-01-01","2026-03-21","2026-04-03","2026-04-06","2026-04-27","2026-05-01","2026-06-16","2026-08-10","2026-09-24","2026-12-16","2026-12-25","2026-12-26",
+ "2027-01-01","2027-03-22","2027-03-26","2027-03-29","2027-04-27","2027-05-01","2027-06-16","2027-08-09","2027-09-24","2027-12-16","2027-12-25","2027-12-27"]);
+const iso=d=>`${d.getFullYear()}-${String(d.getMonth()+1).padStart(2,"0")}-${String(d.getDate()).padStart(2,"0")}`;
+function addWorkingDays(from,n){ const d=new Date(from); let k=0; while(k<n){ d.setDate(d.getDate()+1); const w=d.getDay(); if(w!==0&&w!==6&&!HOL.has(iso(d))) k++ } return d }
+const fmt=d=>new Date(d).toLocaleDateString("en-ZA",{weekday:"short",day:"numeric",month:"short"});
+
+/* ---------- shared page bits ---------- */
+const crumbs=(list)=>`<nav class="crumbs" aria-label="Breadcrumb"><a href="${CTX.home}">Home</a>${list.map((x,i)=>`<span aria-hidden="true">/</span>${i===list.length-1?`<span aria-current="page">${esc(x[0])}</span>`:`<a href="${x[1]}">${esc(x[0])}</a>`}`).join("")}</nav>`;
+
+window.COA={P,BY,C,SWITCH,TYPES,SIZES,DIARIES,PAGES,R,$,esc,img,priceHTML,card,add,openBag,openPanel,closeAll,mount,store,wish,toggleWish,purl,curl,addWorkingDays,fmt,ar,crumbs,hashFor,toast,post,CTX,realHref,
+  get cart(){return cart}, refresh, saveCart, bagTotals, onChange(f){listeners.push(f)}, POLICY, returnable, payflex, Rc};
+})();
