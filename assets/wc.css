@@ -163,3 +163,18 @@
   .wc5 .cart_totals table.shop_table_responsive th{display:block;border:0;padding:6px 0}
   .wc5 .cart_totals table.shop_table_responsive td{display:block;text-align:right}
 }
+
+/* checkout and address fields on a grid, so extra fields added by Checkout Field Editor (e.g. date of birth) get their own row */
+.wc5 .woocommerce-billing-fields__field-wrapper,.wc5 .woocommerce-shipping-fields__field-wrapper,.wc5 .woocommerce-address-fields__field-wrapper,.wc5 .woocommerce-additional-fields__field-wrapper{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1fr);gap:0 16px}
+.wc5 .woocommerce-billing-fields__field-wrapper>.form-row,.wc5 .woocommerce-shipping-fields__field-wrapper>.form-row,.wc5 .woocommerce-address-fields__field-wrapper>.form-row,.wc5 .woocommerce-additional-fields__field-wrapper>.form-row{grid-column:1/-1;width:auto!important;float:none!important}
+.wc5 .woocommerce-billing-fields__field-wrapper>.form-row-first,.wc5 .woocommerce-shipping-fields__field-wrapper>.form-row-first,.wc5 .woocommerce-address-fields__field-wrapper>.form-row-first{grid-column:1}
+.wc5 .woocommerce-billing-fields__field-wrapper>.form-row-last,.wc5 .woocommerce-shipping-fields__field-wrapper>.form-row-last,.wc5 .woocommerce-address-fields__field-wrapper>.form-row-last{grid-column:2}
+.wc5 .form-row label{display:block}
+.wc5 input[type=date]{width:100%;box-sizing:border-box;border:1px solid var(--line);border-radius:0;background:#fff;padding:12px 14px;font:inherit;font-size:14px;min-height:46px}
+.wc5 .woocommerce-input-wrapper{display:block}
+@media (max-width:640px){
+  .wc5 .woocommerce-billing-fields__field-wrapper>.form-row-first,.wc5 .woocommerce-billing-fields__field-wrapper>.form-row-last,
+  .wc5 .woocommerce-shipping-fields__field-wrapper>.form-row-first,.wc5 .woocommerce-shipping-fields__field-wrapper>.form-row-last,
+  .wc5 .woocommerce-address-fields__field-wrapper>.form-row-first,.wc5 .woocommerce-address-fields__field-wrapper>.form-row-last{grid-column:1/-1}
+}
+.wc5 .woocommerce-billing-fields__field-wrapper,.wc5 .woocommerce-shipping-fields__field-wrapper,.wc5 .woocommerce-address-fields__field-wrapper{grid-auto-flow:row dense}

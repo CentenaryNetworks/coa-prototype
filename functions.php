@@ -10,7 +10,7 @@
  */
 defined('ABSPATH') || exit;
 
-define('COA_VER', '1.0.0');
+define('COA_VER', '1.0.1');
 define('COA_DIR', get_stylesheet_directory());
 define('COA_URI', get_stylesheet_directory_uri());
 
